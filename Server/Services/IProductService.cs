@@ -1,10 +1,14 @@
 ﻿using DTOs;
-using Entities;
 
 namespace Services
 {
     public interface IProductService
     {
-        Task<PageResponseDTO<LessInfoProductDTO>> getProducts(int?[] categoryIds, int? min_price, int? max_price, int position, int skip);
+        Task<ProductDetailsDTO> addProduct(ProductCreateDTO productCreateDto);
+        Task<bool> deleteProduct(int id);
+        Task<ProductDetailsDTO> getProductById(int id);
+        Task<IEnumerable<ProductSummaryDTO>> getProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds);
+        Task<IEnumerable<ProductSummaryDTO>> getProductsByOwnerId(int ownerId);
+        Task<ProductDetailsDTO> updateProduct(int id, ProductUpdateDTO productUpdateDto);
     }
 }

@@ -18,40 +18,57 @@ namespace Services
             this._mapper = mapper;
         }
 
-        public async Task<UserDTO> getUserById(int id)
+        public async Task<IEnumerable<UserProfileDTO>> getAllUsers()
         {
-           User user = await _iUsersRepository.getUserById(id);
-           return _mapper.Map<User, UserDTO>(user);
+            IEnumerable<User> users = await _iUsersRepository.getAllUsers();
+            return _mapper.Map<IEnumerable<User>, IEnumerable<UserProfileDTO>>(users);
         }
 
-        public async Task<UserDTO> registerUser(UserToRegisterDTO userToRegister)
+        public async Task<UserProfileDTO> getUserById(int id)
         {
-            CheckPassword checkPassword = _iPasswordService.checkStrengthPassword(userToRegister.Password);
+            User user = await _iUsersRepository.getUserById(id);
+            if (user == null)
+                return null;
+            return _mapper.Map<User, UserProfileDTO>(user);
+        }
+
+        public async Task<UserProfileDTO> registerUser(UserRegisterDTO userToRegister)
+        {
+            var checkPassword = _iPasswordService.checkStrengthPassword(userToRegister.Password);
             if (checkPassword.strength < 2)
             {
                 return null;
             }
-            User user = _mapper.Map<UserToRegisterDTO, User>(userToRegister);
-            user =  await _iUsersRepository.registerUser(user);
-            return _mapper.Map<User, UserDTO>(user);
+            User user = _mapper.Map<UserRegisterDTO, User>(userToRegister);
+            user = await _iUsersRepository.registerUser(user);
+            return _mapper.Map<User, UserProfileDTO>(user);
         }
-        public async Task<UserDTO> loginUser(UserLog userToLog)
+
+        public async Task<UserProfileDTO> loginUser(UserLoginDTO userToLog)
         {
+           
             User user = await _iUsersRepository.loginUser(userToLog);
-            return _mapper.Map<User, UserDTO>(user);
+            if (user == null)
+                return null;
+            return _mapper.Map<User, UserProfileDTO>(user);
         }
-        public async Task<UserDTO> updateUser(UserToRegisterDTO userToUpdate, int id)
+
+        public async Task<UserProfileDTO> updateUser(UserRegisterDTO userToUpdate, int id)
         {
-            CheckPassword checkPassword = _iPasswordService.checkStrengthPassword(userToUpdate.Password);
+            var checkPassword = _iPasswordService.checkStrengthPassword(userToUpdate.Password);
             if (checkPassword.strength < 2)
             {
                 return null;
             }
-            User user = _mapper.Map<UserToRegisterDTO, User>(userToUpdate);
+            User user = _mapper.Map<UserRegisterDTO, User>(userToUpdate);
             user.UserId = id;
-            user = await _iUsersRepository.updateUser(user,id);
-            return _mapper.Map<User, UserDTO>(user);
+            user = await _iUsersRepository.updateUser(user, id);
+            return _mapper.Map<User, UserProfileDTO>(user);
+        }
 
+        public async Task deleteUser(int id)
+        {
+            await _iUsersRepository.deleteUser(id);
         }
     }
 }

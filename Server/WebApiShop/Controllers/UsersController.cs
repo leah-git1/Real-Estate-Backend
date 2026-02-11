@@ -2,10 +2,8 @@
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
-using System.Text.Json;
-//using NLog.Web;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebApiShop.Controllers
 {
@@ -13,57 +11,73 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        IUsersServices _iUsersServices;
+        private readonly IUsersServices _iUsersServices;
         private readonly ILogger<UsersController> _logger;
-        public UsersController(IUsersServices iUsersServices, ILogger<UsersController> logger) { 
+
+        public UsersController(IUsersServices iUsersServices, ILogger<UsersController> logger)
+        {
             _iUsersServices = iUsersServices;
             _logger = logger;
         }
-        
 
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> Get(int ind)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserProfileDTO>>> Get()
         {
-            UserDTO user = await _iUsersServices.getUserById(ind);
-            if(user == null)            
+            IEnumerable<UserProfileDTO> users = await _iUsersServices.getAllUsers();
+            return Ok(users);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserProfileDTO>> Get(int id)
+        {
+            UserProfileDTO user = await _iUsersServices.getUserById(id);
+            if (user == null)
+            {
                 return NotFound();
+            }
             return Ok(user);
         }
 
-        
-        // POST api/<UserController>
         [HttpPost]
-        public async Task<ActionResult<UserDTO>> Post([FromBody] UserToRegisterDTO user)
+        public async Task<ActionResult<UserProfileDTO>> Post([FromBody] UserRegisterDTO user)
         {
-            UserDTO postUser = await _iUsersServices.registerUser(user);
+            UserProfileDTO postUser = await _iUsersServices.registerUser(user);
             if (postUser == null)
+            {
                 return BadRequest();
+            }
             return CreatedAtAction(nameof(Get), new { id = postUser.UserId }, postUser);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDTO>> Post([FromBody] UserLog userToLog)
+        public async Task<ActionResult<UserProfileDTO>> Login([FromBody] UserLoginDTO userToLog)
         {
-            UserDTO user = await _iUsersServices.loginUser(userToLog);
+            UserProfileDTO user = await _iUsersServices.loginUser(userToLog);
             if (user == null)
             {
-                _logger.LogInformation("User not exist");
-                return NoContent();
+                _logger.LogInformation("Login failed for email: {Email}", userToLog.Email);
+                return BadRequest();
             }
-            _logger.LogInformation("User login successfully: Name: {FullName}, Email: {Email}", $"{user.FirstName} {user.LastName}", user.UserName);
-            return CreatedAtAction(nameof(Get), new { id = user.UserId }, user);
+            _logger.LogInformation("User login successfully: Name: {FullName}, Email: {Email}", user.FullName, userToLog.Email);
+            return Ok(user);
         }
 
-        // PUT api/<UserController>/5
         [HttpPut("{id}")]
-        public async  Task<ActionResult> Put([FromBody] UserToRegisterDTO userToUpdate, int id)
+        public async Task<ActionResult> Put(int id, [FromBody] UserRegisterDTO userToUpdate)
         {
-            UserDTO user = await _iUsersServices.updateUser(userToUpdate, id);
+            UserProfileDTO user = await _iUsersServices.updateUser(userToUpdate, id);
             if (user == null)
-                return BadRequest("Password is not strong enough");
+            {
+                return BadRequest();
+            }
             return NoContent();
+        }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            await _iUsersServices.deleteUser(id);
+            return NoContent();
         }
     }
 }

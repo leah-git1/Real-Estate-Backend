@@ -10,27 +10,81 @@ namespace Repository
 {
     public class ProductRepository : IProductRepository
     {
-        ShopContext _ShopContext;
+        private readonly ShopContext _ShopContext;
+
         public ProductRepository(ShopContext ShopContext)
         {
             this._ShopContext = ShopContext;
         }
 
-        public async Task<(List<ProductTbl>,int total)> getProducts(int?[] categoryIds, int? minPrice, int? maxPrice, int position=1, int skip=10)
+        public async Task<IEnumerable<Product>> getProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds)
         {
-            var query = _ShopContext.ProductTbls.Where(product =>
-            //(desc == null ? (true) : (product.Description.Contains(desc)))
-            ((minPrice == null) ? (true) : (product.ProductPrice >= minPrice))
-            && ((maxPrice == null) ? (true) : (product.ProductPrice <= maxPrice))
-            && ((categoryIds.Length == 0) ? (true) : (categoryIds.Contains(product.CategoryId))))
-            .OrderBy(product => product.ProductPrice);
+            return await _ShopContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductImages)
+                .Where(p =>
+                    (p.IsAvailable == true) &&
+                    (categoryIds == null || categoryIds.Length == 0 || categoryIds.Contains(p.CategoryId)) &&
+                    (city == null || p.City.Contains(city)) &&
+                    (minPrice == null || p.Price >= minPrice) &&
+                    (maxPrice == null || p.Price <= maxPrice) &&
+                    (rooms == null || p.Rooms == rooms) &&
+                    (beds == null || p.Beds == beds)
+                )
+                .OrderByDescending(p => p.CreatedDate)
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
-            Console.WriteLine(query.ToQueryString());
-            List<ProductTbl> products = await query.Skip(((position - 1) * skip))
-            .Take(skip).Include(product => product.Category).ToListAsync();
-            var total = await query.CountAsync();
-            return (products, total);
-            
+        public async Task<Product> getProductById(int id)
+        {
+            return await _ShopContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.Owner)
+                .Include(p => p.ProductImages)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+        }
+
+        public async Task<IEnumerable<Product>> getProductsByOwnerId(int ownerId)
+        {
+            return await _ShopContext.Products
+                .Include(p => p.Category)
+                .Where(p => p.OwnerId == ownerId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<Product> addProduct(Product product)
+        {
+            await _ShopContext.Products.AddAsync(product);
+            await _ShopContext.SaveChangesAsync();
+            return product;
+        }
+
+        public async Task<Product> updateProduct(int id, Product productToUpdate)
+        {
+            Product existingProduct = await _ShopContext.Products.FindAsync(id);
+            if (existingProduct == null)
+            {
+                return null;
+            }
+
+            _ShopContext.Entry(existingProduct).CurrentValues.SetValues(productToUpdate);
+            await _ShopContext.SaveChangesAsync();
+            return existingProduct;
+        }
+
+        public async Task<bool> deleteProduct(int id)
+        {
+            Product product = await _ShopContext.Products.FindAsync(id);
+            if (product == null)
+            {
+                return false;
+            }
+
+            _ShopContext.Products.Remove(product);
+            await _ShopContext.SaveChangesAsync();
+            return true;
         }
     }
 }
