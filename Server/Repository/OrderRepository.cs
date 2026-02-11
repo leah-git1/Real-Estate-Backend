@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class OrderRepository : IOrderRepository
+    public class OrderRepository : IOrderRepository, IOrderRepository
     {
         ShopContext _ShopContext;
         public OrderRepository(ShopContext ShopContext)
@@ -16,16 +16,55 @@ namespace Repository
             this._ShopContext = ShopContext;
         }
 
-        public async Task<OrdersTbl> getOrderById(int ind)
+        public async Task<Order> GetOrderById(int ind)
         {
-            return await _ShopContext.OrdersTbls.FirstOrDefaultAsync(x => x.OrderId == ind);
+            return await _ShopContext.Orders
+                //.Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(x => x.OrderId == ind);
+        }
+        public async Task<List<Order>> GetOrdersByUserId(int ind)
+        {
+            return await _ShopContext.Orders
+                .Where(o => o.UserId == ind)
+                //.Include(o => o.OrderItems)
+                .ToListAsync();
         }
 
-        public async Task<OrdersTbl> AddOrder(OrdersTbl order)
+        public async Task<List<Order>> GetAllOrders(int userId)
         {
-            await _ShopContext.OrdersTbls.AddAsync(order);
+            return await _ShopContext.Orders
+                //.Include(o => o.OrderItems)
+                .ToListAsync();
+        }
+
+        public async Task<Order> AddOrder(Order order)
+        {
+            await _ShopContext.Orders.AddAsync(order);
             await _ShopContext.SaveChangesAsync();
             return order;
+        }
+
+
+        public async Task<Order> UpdateOrderStatus(int orderId, string status)
+        {
+            Order order = await _ShopContext.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId);
+            if (order == null)
+                return null;
+
+            order.Status = status;
+            await _ShopContext.SaveChangesAsync();
+            return order;
+        }
+
+        public async Task<bool> OrderDelivered(int orderId)
+        {
+            Order order = await _ShopContext.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId);
+            if (order == null)
+                return false;
+
+            order.Status = "delivered";
+            await _ShopContext.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -2,8 +2,12 @@
 
 namespace Repository
 {
-    public interface ICategoryRepository
+    public interface ICategoryRepository1
     {
-        Task<List<Category>> getCategories();
+        Task<Category> AddCategory(Category category);
+        Task DeleteCategory(Category category);
+        Task<List<Category>> GetAllCategories();
+        Task<Category> GetCategoryById(int id);
+        Task<Category> UpdateCategory(Category category);
     }
 }

@@ -19,15 +19,15 @@ namespace WebApiShop.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        public async Task<List<CategoryDTO>> getCategories()
+        public async Task<List<CategoryDTO>> GetAllCategories()
         {
-            return await _iCategoryServices.getCategories();
+            return await _iCategoryServices.GetAllCategories();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDTO>> getCategoryById(int id)
+        public async Task<ActionResult<CategoryDTO>> GetCategoryById(int id)
         {
-            return await _iCategoryServices.getCategoryById(id);
+            return await _iCategoryServices.GetCategoryById(id);
         }
 
         [HttpPost]
@@ -36,7 +36,7 @@ namespace WebApiShop.Controllers
             CategoryDTO newCategory = await _iCategoryServices.AddCategory(category);
             if (newCategory == null)
                 return BadRequest();
-            return CreatedAtAction(nameof(getCategoryById), new { id = newCategory.CategoryId }, newCategory);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = newCategory.CategoryId }, newCategory);
             //return await _iOrderService.Invite(order);
         }
 

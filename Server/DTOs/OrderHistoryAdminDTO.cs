@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace DTOs
 {
-    public record OrderDTO(
+    public record OrderHistoryAdminDTO(
         int OrderId,
+        int UserId,
         DateTime OrderDate,
         decimal TotalAmount,
         string Status,
-        List<OrderItemDTO> OrderItems
+        List<OrderItemViewDTO> OrderItems
     );
-
 }

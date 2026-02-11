@@ -6,8 +6,8 @@ namespace Services
     {
         Task<CategoryDTO> AddCategory(CategoryCreateDTO categoryCreate);
         Task<bool> DeleteCategory(int id);
-        Task<List<CategoryDTO>> getCategories();
-        Task<CategoryDTO> getCategoryById(int id);
+        Task<List<CategoryDTO>> GetAllCategories();
+        Task<CategoryDTO> GetCategoryById(int id);
         Task<CategoryDTO> UpdateCategory(int id, CategoryUpdateDTO categoryUpdate);
     }
 }

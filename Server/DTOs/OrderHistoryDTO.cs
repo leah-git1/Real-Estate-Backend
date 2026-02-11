@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DTOs
 {
     public record OrderHistoryDTO(
-    int OrderID,
+    int OrderId,
     DateTime OrderDate,
     decimal TotalAmount,
     string Status,

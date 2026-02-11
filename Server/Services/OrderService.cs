@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    public class OrderService :  IOrderService
+    public class OrderService : IOrderService
     {
         IOrderRepository _iOrderRepository;
         IMapper _mapper;
@@ -20,25 +20,42 @@ namespace Services
             this._mapper = mapper;
         }
 
-        public async Task<OrderMoreInfoDTO> getOrderById(int id)
+        public async Task<OrderDTO> getOrderById(int id)
         {
-            OrdersTbl order = await _iOrderRepository.getOrderById(id);
-            OrderMoreInfoDTO orderDTO = _mapper.Map<OrdersTbl, OrderMoreInfoDTO>(order);
+            Order order = await _iOrderRepository.GetOrderById(id);
+            OrderDTO orderDTO = _mapper.Map<Order, OrderDTO>(order);
             return orderDTO;
         }
 
-        public async Task<OrderDTO> AddOrder(CreateOrderDTO createOrder)
+        public async Task<List<OrderDTO>> GetOrdersByUserId(int userId)
         {
-            double? sum = 0;
-            foreach(var item in createOrder.OrderItems)
-            {
-                sum += item.ProductPrice * item.Quantity;
-            }
-            OrdersTbl order = _mapper.Map<CreateOrderDTO, OrdersTbl>(createOrder);
-            order.OrderSum = sum;
-            OrdersTbl orderTbl = await _iOrderRepository.AddOrder(order);
-            OrderDTO orderDTO = _mapper.Map<OrdersTbl, OrderDTO>(orderTbl);
-            return orderDTO;
+            List<Order> orders = await _iOrderRepository.GetOrdersByUserId(userId);
+            return _mapper.Map<List<Order>, List<OrderDTO>>(orders);
+        }
+
+        public async Task<List<OrderDTO>> getAllOrders(int id)
+        {
+            List<Order> orders = await _iOrderRepository.GetAllOrders(id);
+            return _mapper.Map<List<Order>, List<OrderDTO>>(orders);
+        }
+
+        public async Task<OrderDTO> AddOrder(OrderCreateDTO createOrder)
+        {
+            Order order = _mapper.Map<OrderCreateDTO, Order>(createOrder);
+            Order orderTbl = await _iOrderRepository.AddOrder(order);
+            return _mapper.Map<Order, OrderDTO>(orderTbl);
+        }
+
+        public async Task<OrderDTO> UpdateOrderStatus(int orderId, OrderStatusUpdateDTO dto)
+        {
+            string status = dto.Status;
+            Order order = await _iOrderRepository.UpdateOrderStatus(orderId, status);
+            return _mapper.Map<Order, OrderDTO>(order);
+        }
+
+        public async Task<bool> OrderDelivered(int orderId)
+        {
+            return await _iOrderRepository.OrderDelivered(orderId);
         }
     }
 }

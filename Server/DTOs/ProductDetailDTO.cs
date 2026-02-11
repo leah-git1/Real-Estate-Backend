@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DTOs
 {
     public record ProductDetailsDTO(
-        int ProductID,
+        int ProductId,
         string Title,
         string Description,
         decimal Price,

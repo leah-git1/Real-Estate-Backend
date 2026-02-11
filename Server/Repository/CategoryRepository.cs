@@ -7,7 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Repository
-{    public class CategoryRepository : ICategoryRepository
+{
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly ShopContext _ShopContext;
 
@@ -16,40 +17,34 @@ namespace Repository
             this._ShopContext = shopContext;
         }
 
-        // החזרת כל הקטגוריות
-        public async Task<List<Category>> getCategories()
+        public async Task<List<Category>> GetAllCategories()
         {
             return await _ShopContext.Categories.ToListAsync();
         }
 
-        // החזרת קטגוריה לפי ID
-        public async Task<Category> getCategoryById(int id)
+        public async Task<Category> GetCategoryById(int id)
         {
-            return await _ShopContext.Categories
-                .FirstOrDefaultAsync(c => c.CategoryId == id); // מחפש את הקטגוריה לפי ה-ID
+            return await _ShopContext.Categories.FirstOrDefaultAsync(c => c.CategoryId == id);
         }
 
-        // הוספת קטגוריה חדשה
         public async Task<Category> AddCategory(Category category)
         {
-            await _ShopContext.Categories.AddAsync(category); // מוסיף את הקטגוריה למסד הנתונים
-            await _ShopContext.SaveChangesAsync(); // שומר את השינויים
-            return category; // מחזיר את הקטגוריה שהוזנה
+            await _ShopContext.Categories.AddAsync(category);
+            await _ShopContext.SaveChangesAsync();
+            return category;
         }
 
-        // עדכון קטגוריה קיימת
         public async Task<Category> UpdateCategory(Category category)
         {
-            _ShopContext.Categories.Update(category); // מעדכן את הקטגוריה
-            await _ShopContext.SaveChangesAsync(); // שומר את השינויים
-            return category; // מחזיר את הקטגוריה המעודכנת
+            _ShopContext.Categories.Update(category);
+            await _ShopContext.SaveChangesAsync();
+            return category;
         }
 
-        // מחיקת קטגוריה לפי ID
         public async Task DeleteCategory(Category category)
         {
-            _ShopContext.Categories.Remove(category); // מסיר את הקטגוריה מהמסד
-            await _ShopContext.SaveChangesAsync(); // שומר את השינויים
+            _ShopContext.Categories.Remove(category);
+            await _ShopContext.SaveChangesAsync();
         }
     }
 }

@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace DTOs
 {
-    public record OrderCreateDTO(
-    int UserId,
-    List<OrderItemDTO> OrderItems,
-    decimal TotalAmount
+    public record ProductImageDTO(
+        int ImageId,
+        int ProductId,
+        string AdditionalImageUrl
     );
-
 }

@@ -20,45 +20,39 @@ namespace Services
             this._mapper = mapper;
         }
 
-        // פונקציה להחזרת כל הקטגוריות
-        public async Task<List<CategoryDTO>> getCategories()
+        public async Task<List<CategoryDTO>> GetAllCategories()
         {
-            return await _iCategoryRepository.getCategories();
+            List<Category> categories = await _iCategoryRepository.GetAllCategories();
+            return _mapper.Map< List<Category>, List<CategoryDTO>>(categories);
         }
 
-        // פונקציה להחזרת קטגוריה לפי ID
-        public async Task<CategoryDTO> getCategoryById(int id)
+        public async Task<CategoryDTO> GetCategoryById(int id)
         {
-            Category category = await _iCategoryRepository.getCategoryById(id);
-            CategoryDTO categoryDTO = _mapper.Map<Category, CategoryDTO>(category);
-            return categoryDTO;
+            Category category = await _iCategoryRepository.GetCategoryById(id);
+            return _mapper.Map<Category, CategoryDTO>(category);
+
         }
 
-        // פונקציה להוספת קטגוריה
         public async Task<CategoryDTO> AddCategory(CategoryCreateDTO categoryCreate)
         {
             Category category = _mapper.Map<CategoryCreateDTO, Category>(categoryCreate);
             category = await _iCategoryRepository.AddCategory(category);
-            CategoryDTO categoryDTO = _mapper.Map<Category, CategoryDTO>(category);
-            return categoryDTO;
+            return _mapper.Map<Category, CategoryDTO>(category);
         }
 
-        // פונקציה לעדכון קטגוריה
         public async Task<CategoryDTO> UpdateCategory(int id, CategoryUpdateDTO categoryUpdate)
         {
             Category category = _mapper.Map<CategoryUpdateDTO, Category>(categoryUpdate);
             category.CategoryId = id;
-            category = await _iCategoryRepository.UpdateCategory(category, id);
+            category = await _iCategoryRepository.UpdateCategory(category);
             return _mapper.Map<Category, CategoryDTO>(category);
         }
 
-        // פונקציה למחיקת קטגוריה
         public async Task<bool> DeleteCategory(int id)
         {
-            var category = await _iCategoryRepository.getCategoryById(id);
+            Category category = await _iCategoryRepository.GetCategoryById(id);
 
             if (category == null) return false;
-
             await _iCategoryRepository.DeleteCategory(category);
             return true;
         }

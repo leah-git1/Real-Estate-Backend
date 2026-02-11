@@ -4,7 +4,11 @@ namespace Repository
 {
     public interface IOrderRepository
     {
-        Task<OrdersTbl> getOrderById(int ind);
-        Task<OrdersTbl> AddOrder(OrdersTbl order);
+        Task<Order> AddOrder(Order order);
+        Task<List<Order>> GetAllOrders(int userId);
+        Task<Order> GetOrderById(int ind);
+        Task<List<Order>> GetOrdersByUserId(int ind);
+        Task<bool> OrderDelivered(int orderId);
+        Task<Order> UpdateOrderStatus(int orderId, string status);
     }
 }
