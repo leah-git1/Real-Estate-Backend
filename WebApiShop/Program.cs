@@ -19,7 +19,7 @@ builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 
 builder.Host.UseNLog();
-builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-TB3DT9H; Database = RealEstateDB; Trusted_Connection = True; TrustServerCertificate = True;"));
+builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-1VUANBN; Database = RealEstateDB; Trusted_Connection = True; TrustServerCertificate = True;"));
 //builder.Configuration.GetConnectionString("DefaultConnection")
 // Add services to the container.
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -27,6 +27,17 @@ builder.Services.AddControllers();
 //builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // הכתובת של אנגולר
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 //if (app.Environment.IsDevelopment())
@@ -50,6 +61,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseCors();
 
 app.UseAuthorization();
 

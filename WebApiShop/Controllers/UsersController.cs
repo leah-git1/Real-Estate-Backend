@@ -41,12 +41,15 @@ namespace WebApiShop.Controllers
         [HttpPost]
         public async Task<ActionResult<UserProfileDTO>> Post([FromBody] UserRegisterDTO user)
         {
-            UserProfileDTO postUser = await _iUsersServices.registerUser(user);
-            if (postUser == null)
+            try
             {
-                return BadRequest();
+                UserProfileDTO result = await _iUsersServices.registerUser(user);
+                return CreatedAtAction(nameof(Get), new { id = result.UserId }, result);
             }
-            return CreatedAtAction(nameof(Get), new { id = postUser.UserId }, postUser);
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }            
         }
 
         [HttpPost("login")]

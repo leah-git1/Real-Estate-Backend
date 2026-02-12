@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 namespace DTOs
 {
     public record ProductSummaryDTO(
-        int ProductId,
-        string Title,
-        decimal Price,
-        string ImageUrl,
-        string City,
-        int Beds,
-        string CategoryName
-    );
+     int ProductId,
+     string Title,
+     decimal Price,
+     string ImageUrl,
+     string City,
+     int? Beds,
+     int? CategoryId
+ //string CategoryName 
+ );
 }

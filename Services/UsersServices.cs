@@ -2,6 +2,7 @@
 using DTOs;
 using Entities;
 using Repository;
+using System.Collections.Generic;
 
 namespace Services
 {
@@ -31,19 +32,28 @@ namespace Services
                 return null;
             return _mapper.Map<User, UserProfileDTO>(user);
         }
-
         public async Task<UserProfileDTO> registerUser(UserRegisterDTO userToRegister)
         {
             var checkPassword = _iPasswordService.checkStrengthPassword(userToRegister.Password);
+
             if (checkPassword.strength < 2)
             {
-                return null;
+                // זריקת שגיאה עם מסר ספציפי
+                throw new Exception("הסיסמה חלשה מדי. עליה להכיל לפחות 8 תווים ושילוב של אותיות ומספרים.");
             }
+
+            // בדיקה אם האימייל קיים (כדי למנוע את שגיאת ה-Unique Key שראינו קודם)
+            IEnumerable<User> allUsers = await _iUsersRepository.getAllUsers();
+            if (allUsers.Any(u => u.Email == userToRegister.Email))
+            {
+                throw new Exception("כתובת האימייל כבר קיימת במערכת.");
+            }
+
             User user = _mapper.Map<UserRegisterDTO, User>(userToRegister);
             user = await _iUsersRepository.registerUser(user);
             return _mapper.Map<User, UserProfileDTO>(user);
         }
-
+        
         public async Task<UserProfileDTO> loginUser(UserLoginDTO userToLog)
         {
            

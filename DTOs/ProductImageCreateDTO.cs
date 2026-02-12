@@ -9,5 +9,5 @@ namespace DTOs
     public record ProductImageCreateDTO(
         int ProductId,
         string AdditionalImageUrl
-    ); 
+    );
 }
