@@ -21,15 +21,28 @@ namespace Services
             this._mapper = mapper;
         }
 
-        public async Task<IEnumerable<ProductSummaryDTO>> getProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds)
+        public async Task<PageResponseDTO<ProductSummaryDTO>> GetProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip)
         {
-            IEnumerable<Product> products = await _iProductRepository.getProducts(categoryIds, city, minPrice, maxPrice, rooms, beds);
-            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductSummaryDTO>>(products);
+            if (skip <= 0) skip = 10;
+            if (position <= 0) position = 1;
+            (List<Product>, int) response = await _iProductRepository.GetProducts(categoryIds, city, minPrice, maxPrice, rooms, beds, position, skip);
+            List<ProductSummaryDTO> data = _mapper.Map<List<Product>, List<ProductSummaryDTO>>(response.Item1);
+            PageResponseDTO<ProductSummaryDTO> pageResponse = new();
+            pageResponse.Data = data;
+            pageResponse.TotalItems = response.Item2;
+            pageResponse.CurrentPage = position;
+            pageResponse.PageSize = skip;
+            pageResponse.HasPreviousPage = position > 1;
+            int numOfPages = pageResponse.TotalItems / skip;
+            if (pageResponse.TotalItems % skip != 0)
+                numOfPages++;
+            pageResponse.HasNextPage = position < numOfPages;
+            return pageResponse;
         }
 
-        public async Task<ProductDetailsDTO> getProductById(int id)
+        public async Task<ProductDetailsDTO> GetProductById(int id)
         {
-            Product product = await _iProductRepository.getProductById(id);
+            Product product = await _iProductRepository.GetProductById(id);
             if (product == null)
             {
                 return null;
@@ -37,33 +50,37 @@ namespace Services
             return _mapper.Map<Product, ProductDetailsDTO>(product);
         }
 
-        public async Task<IEnumerable<ProductSummaryDTO>> getProductsByOwnerId(int ownerId)
+        public async Task<List<ProductSummaryDTO>> GetProductsByOwnerId(int ownerId)
         {
-            IEnumerable<Product> ownerProducts = await _iProductRepository.getProductsByOwnerId(ownerId);
-            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductSummaryDTO>>(ownerProducts);
+            List<Product> ownerProducts = await _iProductRepository.GetProductsByOwnerId(ownerId);
+            return _mapper.Map<List<Product>, List<ProductSummaryDTO>>(ownerProducts);
         }
 
-        public async Task<ProductDetailsDTO> addProduct(ProductCreateDTO productCreateDto)
+        public async Task<ProductDetailsDTO> AddProduct(ProductCreateDTO productCreateDto)
         {
             Product product = _mapper.Map<ProductCreateDTO, Product>(productCreateDto);
-            Product newProduct = await _iProductRepository.addProduct(product);
+            Product newProduct = await _iProductRepository.AddProduct(product);
             return _mapper.Map<Product, ProductDetailsDTO>(newProduct);
         }
 
-        public async Task<ProductDetailsDTO> updateProduct(int id, ProductUpdateDTO productUpdateDto)
+        public async Task<ProductDetailsDTO> UpdateProduct(int id, ProductUpdateDTO productUpdateDto)
         {
             Product productToUpdate = _mapper.Map<ProductUpdateDTO, Product>(productUpdateDto);
-            Product updatedProduct = await _iProductRepository.updateProduct(id, productToUpdate);
+            Product updatedProduct = await _iProductRepository.UpdateProduct(id, productToUpdate);
             if (updatedProduct == null)
+            {
+                return null;
+            }
+            if (productUpdateDto.CategoryId <= 0)
             {
                 return null;
             }
             return _mapper.Map<Product, ProductDetailsDTO>(updatedProduct);
         }
 
-        public async Task<bool> deleteProduct(int id)
+        public async Task<bool> DeleteProduct(int id)
         {
-            return await _iProductRepository.deleteProduct(id);
+            return await _iProductRepository.DeleteProduct(id);
         }
     }
 }

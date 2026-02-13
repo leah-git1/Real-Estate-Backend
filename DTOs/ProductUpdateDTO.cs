@@ -11,8 +11,8 @@ namespace DTOs
         string Description,
         decimal Price,
         string MainImageUrl,
-        List<string> AdditionalImages,
-        int CategoryID,
+        List<ProductImageUrlDTO> AdditionalImages,
+        int CategoryId,
         string City,
         int Beds
     );

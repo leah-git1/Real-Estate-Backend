@@ -21,13 +21,15 @@ namespace Services
             CreateMap<Product, ProductDetailsDTO>();
             CreateMap<ProductDetailsDTO, Product>();
             CreateMap<ProductCreateDTO, Product>();
-
+            CreateMap<ProductImage, ProductImageUrlDTO>();
+            CreateMap<ProductImageUrlDTO, ProductImage>();
             CreateMap<ProductUpdateDTO, Product>();
             CreateMap<Product, ProductViewDTO>();
             CreateMap<ProductImage,ProductImageDTO>();
             CreateMap<ProductImageDTO, ProductImage>();
             CreateMap<ProductImageUpdateDTO, ProductImage>();
             CreateMap<ProductImageCreateDTO, ProductImage>();
+            CreateMap<ProductUpdateDTO, Product>();
 
             CreateMap<Category, CategoryDTO>();
             CreateMap<CategoryDTO, Category>();

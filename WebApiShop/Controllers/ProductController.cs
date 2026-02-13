@@ -20,34 +20,33 @@ namespace WebApiShop.Controllers
 
         // GET: api/<ProductController>
         [HttpGet]
-        public async Task<IEnumerable<ProductSummaryDTO>> GetProducts([FromQuery] int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds)
+        public async Task<ActionResult<PageResponseDTO<ProductSummaryDTO>>> GetProducts([FromQuery] int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip)
         {
-            IEnumerable<ProductSummaryDTO> products = await _iProductService.getProducts(categoryIds, city, minPrice, maxPrice, rooms, beds);
-            return products;
+            return  await _iProductService.GetProducts(categoryIds, city, minPrice, maxPrice, rooms, beds, position, skip);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDetailsDTO>> GetById(int id)
+        public async Task<ActionResult<ProductDetailsDTO>> GetProductById(int id)
         {
-            ProductDetailsDTO product = await _iProductService.getProductById(id);
+            ProductDetailsDTO product = await _iProductService.GetProductById(id);
             if (product == null)
             {
                 return NotFound();
             }
-            return Ok(product);
+            return product;
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProductDetailsDTO>> Post([FromBody] ProductCreateDTO productCreateDto)
+        public async Task<ActionResult<ProductDetailsDTO>> AddProduct(ProductCreateDTO productCreateDto)
         {
-            ProductDetailsDTO newProduct = await _iProductService.addProduct(productCreateDto);
-            return CreatedAtAction(nameof(GetById), new { id = newProduct.ProductId }, newProduct);
+            ProductDetailsDTO newProduct = await _iProductService.AddProduct(productCreateDto);
+            return CreatedAtAction(nameof(GetProductById), new { id = newProduct.ProductId }, newProduct);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] ProductUpdateDTO productUpdateDto)
+        public async Task<ActionResult> Put(int id, ProductUpdateDTO productUpdateDto)
         {
-            ProductDetailsDTO updatedProduct = await _iProductService.updateProduct(id, productUpdateDto);
+            ProductDetailsDTO updatedProduct = await _iProductService.UpdateProduct(id, productUpdateDto);
             if (updatedProduct == null)
             {
                 return NotFound();
@@ -56,9 +55,9 @@ namespace WebApiShop.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteProduct(int id)
         {
-            bool isDeleted = await _iProductService.deleteProduct(id);
+            bool isDeleted = await _iProductService.DeleteProduct(id);
             if (!isDeleted)
             {
                 return NotFound();
@@ -67,9 +66,9 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet("owner/{ownerId}")]
-        public async Task<IEnumerable<ProductSummaryDTO>> GetByOwnerId(int ownerId)
+        public async Task<ActionResult<List<ProductSummaryDTO>>> GetProductsByOwnerId(int ownerId)
         {
-            IEnumerable<ProductSummaryDTO> ownerProducts = await _iProductService.getProductsByOwnerId(ownerId);
+            List<ProductSummaryDTO> ownerProducts = await _iProductService.GetProductsByOwnerId(ownerId);
             return ownerProducts;
         }
     }
