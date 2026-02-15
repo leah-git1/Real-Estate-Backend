@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.EntityFrameworkCore;
 using NLog.Web;
+using Repositories;
 using Repository;
 using Services;
+using WebApiShop;
+using WebApiShop.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +20,11 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 
 builder.Host.UseNLog();
-builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-TB3DT9H; Database = RealEstateDB; Trusted_Connection = True; TrustServerCertificate = True;"));
+builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = srv2\\pupils; Database = RealEstateDB_; Trusted_Connection = True; TrustServerCertificate = True;"));
 //builder.Configuration.GetConnectionString("DefaultConnection")
 // Add services to the container.
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -32,7 +37,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // הכתובת של אנגולר
+        policy.WithOrigins("http://localhost:4200") 
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -59,6 +64,9 @@ if (app.Environment.IsDevelopment())
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+
+app.UseErrorHandling();
+app.UseRating();
 
 app.UseStaticFiles();
 

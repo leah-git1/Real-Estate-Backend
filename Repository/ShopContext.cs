@@ -23,25 +23,26 @@ public partial class ShopContext : DbContext
 
     public virtual DbSet<ProductImage> ProductImages { get; set; }
 
+    public virtual DbSet<Rating> Ratings { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A2B9C8C135A");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A2BBB4B3453");
 
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CategoryName)
                 .IsRequired()
                 .HasMaxLength(50);
-            entity.Property(e=>e.Description)
-                .HasMaxLength(500);
+            entity.Property(e => e.Description).HasMaxLength(500);
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAFC148B509");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAF38C6F4C9");
 
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.OrderDate)
@@ -61,7 +62,7 @@ public partial class ShopContext : DbContext
 
         modelBuilder.Entity<OrderItem>(entity =>
         {
-            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED06A19BB1C893");
+            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED06A134553811");
 
             entity.Property(e => e.OrderItemId).HasColumnName("OrderItemID");
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
@@ -81,7 +82,7 @@ public partial class ShopContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6ED72F38E9D");
+            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6ED8BC5F91E");
 
             entity.Property(e => e.ProductId).HasColumnName("ProductID");
             entity.Property(e => e.Beds).HasDefaultValue(0);
@@ -108,7 +109,7 @@ public partial class ShopContext : DbContext
 
         modelBuilder.Entity<ProductImage>(entity =>
         {
-            entity.HasKey(e => e.ImageId).HasName("PK__ProductI__7516F4ECB533E0B1");
+            entity.HasKey(e => e.ImageId).HasName("PK__ProductI__7516F4EC28063E2C");
 
             entity.Property(e => e.ImageId).HasColumnName("ImageID");
             entity.Property(e => e.AdditionalImageUrl).IsRequired();
@@ -119,11 +120,23 @@ public partial class ShopContext : DbContext
                 .HasConstraintName("FK_ProductImages_Products");
         });
 
+        modelBuilder.Entity<Rating>(entity =>
+        {
+            entity.HasKey(e => e.RatingId).HasName("PK__Ratings__FCCDF87C1B169CD7");
+
+            entity.Property(e => e.Host).HasMaxLength(255);
+            entity.Property(e => e.Method).HasMaxLength(50);
+            entity.Property(e => e.Path).HasMaxLength(500);
+            entity.Property(e => e.RecordDate).HasColumnType("datetime");
+            entity.Property(e => e.Referer).HasMaxLength(500);
+            entity.Property(e => e.UserAgent).HasMaxLength(1000);
+        });
+
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC3E16B21A");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACBC7018E5");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D10534B29DB5FC").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D1053402FA8941").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.Email)
