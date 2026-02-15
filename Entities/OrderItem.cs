@@ -13,6 +13,10 @@ public partial class OrderItem
 
     public int ProductId { get; set; }
 
+    public DateTime? StartDate { get; set; }
+
+    public DateTime? EndDate { get; set; }
+
     public decimal PriceAtPurchase { get; set; }
 
     public virtual Order Order { get; set; }

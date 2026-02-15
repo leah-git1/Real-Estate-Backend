@@ -13,11 +13,13 @@ namespace Services
     public class ProductService : IProductService
     {
         IProductRepository _iProductRepository;
+        IOrderRepository _iOrderRepository;
         IMapper _mapper;
 
-        public ProductService(IProductRepository iProductRepository, IMapper mapper)
+        public ProductService(IProductRepository iProductRepository, IOrderRepository iOrderRepository, IMapper mapper)
         {
             this._iProductRepository = iProductRepository;
+            this._iOrderRepository = iOrderRepository;
             this._mapper = mapper;
         }
 
@@ -82,5 +84,52 @@ namespace Services
         {
             return await _iProductRepository.DeleteProduct(id);
         }
+
+        public async Task<bool> CheckAvailability(int productId, DateTime? start, DateTime? end)
+        {
+            Product product = await _iProductRepository.GetProductById(productId);
+
+            if (product == null || product.IsAvailable != true)
+                return false;
+
+            // אם זה מכירה – אין בדיקת תאריכים
+            if (product.TransactionType == "Sale")
+                return true;
+
+            // אם זה השכרה – חייבים תאריכים
+            if (!start.HasValue || !end.HasValue)
+                return false;
+
+            DateTime startDate = start.Value.Date;
+            DateTime endDate = end.Value.Date;
+
+            if (startDate >= endDate)
+                return false;
+
+            if (startDate < DateTime.UtcNow.Date)
+                return false;
+
+            List<OrderItem> existingOrders =
+                await _iOrderRepository.GetOrderItemsByProductId(productId);
+
+            foreach (OrderItem oi in existingOrders)
+            {
+                if (!oi.StartDate.HasValue || !oi.EndDate.HasValue)
+                    continue;
+
+                DateTime existingStart = oi.StartDate.Value.Date;
+                DateTime existingEnd = oi.EndDate.Value.Date;
+
+                if (startDate < existingEnd && endDate > existingStart)
+                    return false;
+            }
+
+            return true;
+        }
+
+
+
+
+
     }
 }

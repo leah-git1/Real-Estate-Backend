@@ -8,7 +8,11 @@ namespace DTOs
 {
     public record OrderItemDTO(
         int ProductId,
-        decimal PriceAtPurchase
+        decimal PriceAtPurchase,
+        DateTime StartDate, 
+        DateTime EndDate  
     );
 
 }
+
+  

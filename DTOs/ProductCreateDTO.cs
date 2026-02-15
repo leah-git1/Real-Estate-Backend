@@ -16,7 +16,12 @@ namespace DTOs
         int CategoryId,
         string City,
         int Beds,
-        int Rooms
-    );
+        int Rooms,
+        string TransactionType
+
+    )
+    {
+
+    };
 
 }

@@ -71,5 +71,12 @@ namespace WebApiShop.Controllers
             List<ProductSummaryDTO> ownerProducts = await _iProductService.GetProductsByOwnerId(ownerId);
             return ownerProducts;
         }
+
+        [HttpGet("check-availability")]
+        public async Task<ActionResult<bool>> GetAvailability([FromQuery] int productId, [FromQuery] DateTime? start, [FromQuery] DateTime? end)
+        {
+            bool isAvailable = await _iProductService.CheckAvailability(productId, start, end);
+            return Ok(isAvailable);
+        }
     }
 }

@@ -19,22 +19,25 @@ public partial class Product
 
     public int? CategoryId { get; set; }
 
-    public int? OwnerId { get; set; }
-
-    public bool? IsAvailable { get; set; }
-
-    public DateTime? CreatedDate { get; set; }
-
     public string City { get; set; }
 
     public int? Rooms { get; set; }
 
     public int? Beds { get; set; }
 
+    public int? OwnerId { get; set; }
+
+    public bool? IsAvailable { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
     public virtual Category Category { get; set; }
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual User Owner { get; set; }
+
     public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
+
+    public string TransactionType { get; set; } = "Sale";
 }

@@ -40,12 +40,19 @@ namespace WebApiShop.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderDTO>> AddOrder(OrderCreateDTO order)
         {
-            OrderDTO postOrder = await _iOrderService.AddOrder(order);
-            if (postOrder == null)
-                return BadRequest();
-
-            return CreatedAtAction(nameof(GetOrderById), new { id = postOrder.OrderId }, postOrder);
-            //return await _iOrderService.Invite(order);
+            try
+            {
+                OrderDTO postOrder = await _iOrderService.AddOrder(order);
+                return CreatedAtAction(nameof(GetOrderById), new { id = postOrder.OrderId }, postOrder);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "ProductUnavailable")
+                {
+                    return Conflict(new { Message = "אחת מהדירות שבחרת כבר תפוסה בתאריכים אלו." });
+                }
+                return BadRequest(new { Message = "חלה שגיאה בביצוע ההזמנה", Details = ex.Message });
+            }
         }
 
         [HttpPut("{orderId}/status")]

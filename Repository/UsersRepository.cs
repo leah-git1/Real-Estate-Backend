@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Entities;
+using Repository;
 
 namespace Repository
 {

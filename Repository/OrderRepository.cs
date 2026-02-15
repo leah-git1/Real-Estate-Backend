@@ -69,5 +69,13 @@ namespace Repository
             await _ShopContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<OrderItem>> GetOrderItemsByProductId(int productId)
+        {
+            return await _ShopContext.OrderItems
+                .Where(oi => oi.ProductId == productId)
+                .ToListAsync();
+        }
+
     }
 }

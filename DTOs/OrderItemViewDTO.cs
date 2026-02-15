@@ -9,6 +9,9 @@ namespace DTOs
     public record OrderItemViewDTO(
         int ProductId,
         decimal PriceAtPurchase,
-        ProductViewDTO Product
+        ProductViewDTO Product,
+        DateTime StartDate,
+        DateTime EndDate
+        
     );
 }

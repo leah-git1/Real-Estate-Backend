@@ -40,7 +40,7 @@ namespace Repository
             && ((maxPrice == null) ? (true) : (product.Price <= maxPrice))
             && ((categoryIds.Length == 0) ? (true) : (categoryIds.Contains(product.CategoryId))
              && (rooms == null || product.Rooms == rooms) &&
-                    (beds == null || product.Beds == beds)&&
+                    (beds == null || product.Beds == beds) &&
                     (city == null || product.City.Contains(city)) &&
                     (product.IsAvailable == true)))
             .OrderBy(product => product.Price);
@@ -101,5 +101,6 @@ namespace Repository
             await _ShopContext.SaveChangesAsync();
             return true;
         }
+
     }
 }

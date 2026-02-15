@@ -1,53 +1,50 @@
 ﻿using AutoMapper;
 using DTOs;
 using Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services
 {
-    public class AutoMapping:Profile
+    public class AutoMapping : Profile
     {
-        public AutoMapping() 
+        public AutoMapping()
         {
+            // ================= Users =================
             CreateMap<User, UserProfileDTO>();
             CreateMap<UserRegisterDTO, User>();
 
+            // ================= Products =================
             CreateMap<Product, ProductSummaryDTO>();
-
             CreateMap<Product, ProductDetailsDTO>();
             CreateMap<ProductDetailsDTO, Product>();
             CreateMap<ProductCreateDTO, Product>();
-            CreateMap<ProductImage, ProductImageUrlDTO>();
-            CreateMap<ProductImageUrlDTO, ProductImage>();
             CreateMap<ProductUpdateDTO, Product>();
             CreateMap<Product, ProductViewDTO>();
-            CreateMap<ProductImage,ProductImageDTO>();
-            CreateMap<ProductImageDTO, ProductImage>();
-            CreateMap<ProductImageUpdateDTO, ProductImage>();
-            CreateMap<ProductImageCreateDTO, ProductImage>();
-            CreateMap<ProductUpdateDTO, Product>();
 
+            // ================= Product Images =================
+            CreateMap<ProductImage, ProductImageDTO>();
+            CreateMap<ProductImageDTO, ProductImage>();
+            CreateMap<ProductImageCreateDTO, ProductImage>();
+            CreateMap<ProductImageUpdateDTO, ProductImage>();
+            CreateMap<ProductImage, ProductImageUrlDTO>();
+            CreateMap<ProductImageUrlDTO, ProductImage>();
+
+            // ================= Categories =================
             CreateMap<Category, CategoryDTO>();
             CreateMap<CategoryDTO, Category>();
+            CreateMap<CategoryCreateDTO, Category>();
             CreateMap<CategoryUpdateDTO, Category>();
-            CreateMap<CategoryCreateDTO, Category > ();
 
+            // ================= Orders =================
             CreateMap<Order, OrderDTO>();
             CreateMap<OrderDTO, Order>();
             CreateMap<OrderCreateDTO, Order>();
             CreateMap<Order, OrderHistoryDTO>();
             CreateMap<Order, OrderHistoryAdminDTO>();
+
+            // ================= Order Items =================
+            CreateMap<OrderItem, OrderItemDTO>();
             CreateMap<OrderItemDTO, OrderItem>();
             CreateMap<OrderItem, OrderItemViewDTO>();
-            CreateMap<OrderCreateDTO, Order>();
-            CreateMap<Order, OrderHistoryAdminDTO>();
-            CreateMap<OrderItem, OrderItemDTO>();
-
-
         }
     }
 }

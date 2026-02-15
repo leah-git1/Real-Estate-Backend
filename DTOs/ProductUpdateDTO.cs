@@ -14,7 +14,8 @@ namespace DTOs
         List<ProductImageUrlDTO> AdditionalImages,
         int CategoryId,
         string City,
-        int Beds
+        int Beds,
+        string TransactionType
     );
 
 }

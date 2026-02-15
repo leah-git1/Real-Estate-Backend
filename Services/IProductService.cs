@@ -5,6 +5,7 @@ namespace Services
     public interface IProductService
     {
         Task<ProductDetailsDTO> AddProduct(ProductCreateDTO productCreateDto);
+        Task<bool> CheckAvailability(int productId, DateTime? start, DateTime? end);
         Task<bool> DeleteProduct(int id);
         Task<ProductDetailsDTO> GetProductById(int id);
         Task<PageResponseDTO<ProductSummaryDTO>> GetProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip);
