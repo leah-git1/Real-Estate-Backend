@@ -24,13 +24,25 @@ namespace WebApiShop.Controllers
         [HttpGet]
         public async Task<List<CategoryDTO>> GetAllCategories()
         {
-            return await _iCategoryServices.GetAllCategories();
+            List<CategoryDTO> categories = await _iCategoryServices.GetAllCategories();
+            if (categories == null)
+            {
+                _logger.LogWarning("Categorys were not found");
+                return new List<CategoryDTO>();
+            }
+            return categories;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDTO>> GetCategoryById(int id)
         {
-            return await _iCategoryServices.GetCategoryById(id);
+            CategoryDTO category = await _iCategoryServices.GetCategoryById(id);
+            if(category == null)
+            {
+                _logger.LogWarning("Category with ID {Id} was not found", id);
+                return NotFound();
+            }
+            return category;
         }
 
         [HttpPost]

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services;
 using DTOs;
+using Entities;
 namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
@@ -20,13 +21,25 @@ namespace WebApiShop.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductImageDTO>> GetProductImageById(int id)
         {
-            return await _iProductImageService.getProductImageById(id);
+            ProductImageDTO productImage = await _iProductImageService.getProductImageById(id);
+            if(productImage == null) 
+            {
+                _logger.LogWarning("Product Image with ID {Id} was not found", id);
+                return NotFound();
+            }
+            return productImage;
         }
 
         [HttpGet("productImage/{productId}")]
         public async Task<ActionResult<List<ProductImageDTO>>> GetProductImagesByProductId(int productId)
         {
-            return await _iProductImageService.GetProductImagesByProductId(productId);
+            List<ProductImageDTO> productImages = await _iProductImageService.GetProductImagesByProductId(productId);
+            if (productImages == null)
+            {
+                _logger.LogWarning("Products Image with productID {productId} was not found", productId);
+                return NotFound();
+            }
+            return productImages;
         }
 
         // POST api/<OrderController>

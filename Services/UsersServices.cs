@@ -19,10 +19,10 @@ namespace Services
             this._mapper = mapper;
         }
 
-        public async Task<IEnumerable<UserProfileDTO>> GetAllUsers()
+        public async Task<List<UserProfileDTO>> GetAllUsers()
         {
-            IEnumerable<User> users = await _iUsersRepository.GetAllUsers();
-            return _mapper.Map<IEnumerable<User>, IEnumerable<UserProfileDTO>>(users);
+            List<User> users = await _iUsersRepository.GetAllUsers();
+            return _mapper.Map<List<User>, List<UserProfileDTO>>(users);
         }
 
         public async Task<UserProfileDTO> GetUserById(int id)

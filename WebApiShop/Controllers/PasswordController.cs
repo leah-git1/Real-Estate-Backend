@@ -10,7 +10,7 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class PasswordController : ControllerBase
     {
-        IPasswordService _iPasswordService;
+        private readonly IPasswordService _iPasswordService;
         public PasswordController(IPasswordService iPasswordService)
         {
             _iPasswordService = iPasswordService;

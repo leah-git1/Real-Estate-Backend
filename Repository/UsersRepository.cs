@@ -15,7 +15,7 @@ namespace Repository
             this._ShopContext = shopContext;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers()
         {
             return await _ShopContext.Users.ToListAsync();
         }

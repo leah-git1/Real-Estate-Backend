@@ -21,9 +21,14 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserProfileDTO>>> GetAllUsers()
+        public async Task<ActionResult<List<UserProfileDTO>>> GetAllUsers()
         {
-            IEnumerable<UserProfileDTO> users = await _iUsersServices.GetAllUsers();
+            List<UserProfileDTO> users = await _iUsersServices.GetAllUsers();
+            if (users == null)
+            {
+                _logger.LogWarning("Users were not found");
+                return new List<UserProfileDTO>();
+            }
             return Ok(users);
         }
 

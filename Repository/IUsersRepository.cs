@@ -6,7 +6,7 @@ namespace Repository
     public interface IUsersRepository
     {
         Task DeleteUser(int id);
-        Task<IEnumerable<User>> GetAllUsers();
+        Task<List<User>> GetAllUsers();
         Task<User> GetUserById(int id);
         Task<User> LoginUser(UserLoginDTO userToLog);
         Task<User> RegisterUser(User user);
