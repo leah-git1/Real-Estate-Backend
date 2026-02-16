@@ -12,9 +12,9 @@ namespace WebApiShop.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _iProductService;
-        private readonly Logger<ProductController> _logger;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IProductService iProductService, Logger<ProductController> logger)
+        public ProductController(IProductService iProductService, ILogger<ProductController> logger)
         {
             _iProductService = iProductService;
             _logger = logger;

@@ -124,6 +124,10 @@ public partial class ShopContext : DbContext
                 .HasMaxLength(20)
                 .HasDefaultValue("Sale");
 
+            // הוספת שדות נוספים כמו Rooms
+            entity.Property(e => e.Rooms).HasColumnType("int").IsRequired(false);
+            entity.Property(e => e.Beds).HasColumnType("int").HasDefaultValue(0);
+
             entity.HasOne(d => d.Category)
                 .WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
@@ -195,6 +199,9 @@ public partial class ShopContext : DbContext
                 .HasMaxLength(255);
 
             entity.Property(e => e.Phone).HasMaxLength(20);
+
+            // הוספת Address למשתמש
+            entity.Property(e => e.Address).HasMaxLength(500).IsRequired(false);
         });
 
         OnModelCreatingPartial(modelBuilder);

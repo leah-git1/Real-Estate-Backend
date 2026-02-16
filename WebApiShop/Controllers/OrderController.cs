@@ -14,9 +14,9 @@ namespace WebApiShop.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _iOrderService;
-        private readonly Logger<OrderController> _logger;
+        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IOrderService iOrderService, Logger<OrderController> logger)
+        public OrderController(IOrderService iOrderService, ILogger<OrderController> logger)
         {
             _iOrderService = iOrderService;
             _logger = logger;

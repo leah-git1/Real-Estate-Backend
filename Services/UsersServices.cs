@@ -41,7 +41,7 @@ namespace Services
                 throw new Exception("הסיסמה חלשה מדי. עליה להכיל לפחות 8 תווים ושילוב של אותיות ומספרים.");
             }
 
-            IEnumerable<User> allUsers = await _iUsersRepository.GetAllUsers();
+            List<User> allUsers = await _iUsersRepository.GetAllUsers();
             if (allUsers.Any(u => u.Email == userToRegister.Email))
             {
                 throw new Exception("כתובת האימייל כבר קיימת במערכת.");
