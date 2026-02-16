@@ -10,7 +10,7 @@ namespace Repository
 {
     public class OrderRepository : IOrderRepository
     {
-        ShopContext _ShopContext;
+        private readonly ShopContext _ShopContext;
         public OrderRepository(ShopContext ShopContext)
         {
             this._ShopContext = ShopContext;

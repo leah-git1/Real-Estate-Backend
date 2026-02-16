@@ -12,8 +12,9 @@ namespace Services
 {
     public class CategoriesServies : ICategoriesServies
     {
-        ICategoryRepository _iCategoryRepository;
-        IMapper _mapper;
+        private readonly ICategoryRepository _iCategoryRepository;
+        private readonly IMapper _mapper;
+
         public CategoriesServies(ICategoryRepository iCategoryRepository, IMapper mapper)
         {
             this._iCategoryRepository = iCategoryRepository;
@@ -23,7 +24,7 @@ namespace Services
         public async Task<List<CategoryDTO>> GetAllCategories()
         {
             List<Category> categories = await _iCategoryRepository.GetAllCategories();
-            return _mapper.Map< List<Category>, List<CategoryDTO>>(categories);
+            return _mapper.Map<List<Category>, List<CategoryDTO>>(categories);
         }
 
         public async Task<CategoryDTO> GetCategoryById(int id)
@@ -42,9 +43,14 @@ namespace Services
 
         public async Task<CategoryDTO> UpdateCategory(int id, CategoryUpdateDTO categoryUpdate)
         {
-            Category category = _mapper.Map<CategoryUpdateDTO, Category>(categoryUpdate);
-            category.CategoryId = id;
-            category = await _iCategoryRepository.UpdateCategory(category);
+            Category existingCategory = await _iCategoryRepository.GetCategoryById(id);
+
+            if (existingCategory == null)
+                return null;
+
+            _mapper.Map(categoryUpdate, existingCategory);
+            Category category = await _iCategoryRepository.UpdateCategory(existingCategory);
+
             return _mapper.Map<Category, CategoryDTO>(category);
         }
 

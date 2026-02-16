@@ -12,8 +12,8 @@ namespace Services
 {
     public class ProductImageService : IProductImageService
     {
-        IProductImageRepository _iProductImageRepository;
-        IMapper _mapper;
+        private readonly IProductImageRepository _iProductImageRepository;
+        private readonly IMapper _mapper;
         public ProductImageService(IProductImageRepository iProductImageRepository, IMapper mapper)
         {
             this._iProductImageRepository = iProductImageRepository;

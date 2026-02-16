@@ -13,12 +13,9 @@ namespace DTOs
      string ImageUrl,
      string City,
      int? Beds,
+     int? Rooms,
      int? CategoryId,
+     string CategoryCategoryName,
      string TransactionType
-
-
- )
-    {
-
-    };
+    );
 }

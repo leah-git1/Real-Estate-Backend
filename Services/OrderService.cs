@@ -12,10 +12,10 @@ namespace Services
 {
     public class OrderService : IOrderService
     {
-        IOrderRepository _iOrderRepository;
-        IProductRepository _iProductRepository;
-        IProductService _iProductService; 
-        IMapper _mapper;
+        private readonly IOrderRepository _iOrderRepository;
+        private readonly IProductRepository _iProductRepository;
+        private readonly IProductService _iProductService;
+        private readonly IMapper _mapper;
 
         public OrderService(IOrderRepository iOrderRepository, IProductRepository iProductRepository, IProductService iProductService, IMapper mapper)
         {
@@ -66,7 +66,7 @@ namespace Services
                 Product p = await _iProductRepository
                     .GetProductById(orderItem.ProductId);
 
-                // אם זה מוצר למכירה – נועל אותו
+                
                 if (p.TransactionType == "Sale")
                 {
                     p.IsAvailable = false;

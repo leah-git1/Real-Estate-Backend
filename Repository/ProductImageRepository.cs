@@ -10,7 +10,7 @@ namespace Repository
 {
     public class ProductImageRepository :  IProductImageRepository
     {
-        ShopContext _ShopContext;
+        private readonly ShopContext _ShopContext;
 
         public ProductImageRepository(ShopContext ShopContext)
         {

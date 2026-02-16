@@ -5,11 +5,11 @@ namespace Repository
 {
     public interface IUsersRepository
     {
-        Task deleteUser(int id);
-        Task<IEnumerable<User>> getAllUsers();
-        Task<User> getUserById(int id);
-        Task<User> loginUser(UserLoginDTO userToLog);
-        Task<User> registerUser(User user);
-        Task<User> updateUser(User userToUpdate, int id);
+        Task DeleteUser(int id);
+        Task<IEnumerable<User>> GetAllUsers();
+        Task<User> GetUserById(int id);
+        Task<User> LoginUser(UserLoginDTO userToLog);
+        Task<User> RegisterUser(User user);
+        Task<User> UpdateUser(User userToUpdate, int id);
     }
 }

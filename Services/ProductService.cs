@@ -12,9 +12,9 @@ namespace Services
 {
     public class ProductService : IProductService
     {
-        IProductRepository _iProductRepository;
-        IOrderRepository _iOrderRepository;
-        IMapper _mapper;
+        private readonly IProductRepository _iProductRepository;
+        private readonly IOrderRepository _iOrderRepository;
+        private readonly IMapper _mapper;
 
         public ProductService(IProductRepository iProductRepository, IOrderRepository iOrderRepository, IMapper mapper)
         {
@@ -92,11 +92,9 @@ namespace Services
             if (product == null || product.IsAvailable != true)
                 return false;
 
-            // אם זה מכירה – אין בדיקת תאריכים
             if (product.TransactionType == "Sale")
                 return true;
 
-            // אם זה השכרה – חייבים תאריכים
             if (!start.HasValue || !end.HasValue)
                 return false;
 
@@ -126,10 +124,6 @@ namespace Services
 
             return true;
         }
-
-
-
-
 
     }
 }

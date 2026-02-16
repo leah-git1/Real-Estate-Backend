@@ -8,9 +8,9 @@ namespace Services
 {
     public class UsersServices : IUsersServices
     {
-        IUsersRepository _iUsersRepository;
-        IPasswordService _iPasswordService;
-        IMapper _mapper;
+        private readonly IUsersRepository _iUsersRepository;
+        private readonly IPasswordService _iPasswordService;
+        private readonly IMapper _mapper;
 
         public UsersServices(IUsersRepository iusersRepository, IPasswordService passwordService, IMapper mapper)
         {
@@ -19,51 +19,49 @@ namespace Services
             this._mapper = mapper;
         }
 
-        public async Task<IEnumerable<UserProfileDTO>> getAllUsers()
+        public async Task<IEnumerable<UserProfileDTO>> GetAllUsers()
         {
-            IEnumerable<User> users = await _iUsersRepository.getAllUsers();
+            IEnumerable<User> users = await _iUsersRepository.GetAllUsers();
             return _mapper.Map<IEnumerable<User>, IEnumerable<UserProfileDTO>>(users);
         }
 
-        public async Task<UserProfileDTO> getUserById(int id)
+        public async Task<UserProfileDTO> GetUserById(int id)
         {
-            User user = await _iUsersRepository.getUserById(id);
+            User user = await _iUsersRepository.GetUserById(id);
             if (user == null)
                 return null;
             return _mapper.Map<User, UserProfileDTO>(user);
         }
-        public async Task<UserProfileDTO> registerUser(UserRegisterDTO userToRegister)
+        public async Task<UserProfileDTO> RegisterUser(UserRegisterDTO userToRegister)
         {
             var checkPassword = _iPasswordService.checkStrengthPassword(userToRegister.Password);
 
             if (checkPassword.strength < 2)
             {
-                // זריקת שגיאה עם מסר ספציפי
                 throw new Exception("הסיסמה חלשה מדי. עליה להכיל לפחות 8 תווים ושילוב של אותיות ומספרים.");
             }
 
-            // בדיקה אם האימייל קיים (כדי למנוע את שגיאת ה-Unique Key שראינו קודם)
-            IEnumerable<User> allUsers = await _iUsersRepository.getAllUsers();
+            IEnumerable<User> allUsers = await _iUsersRepository.GetAllUsers();
             if (allUsers.Any(u => u.Email == userToRegister.Email))
             {
                 throw new Exception("כתובת האימייל כבר קיימת במערכת.");
             }
 
             User user = _mapper.Map<UserRegisterDTO, User>(userToRegister);
-            user = await _iUsersRepository.registerUser(user);
+            user = await _iUsersRepository.RegisterUser(user);
             return _mapper.Map<User, UserProfileDTO>(user);
         }
-        
-        public async Task<UserProfileDTO> loginUser(UserLoginDTO userToLog)
+
+        public async Task<UserProfileDTO> LoginUser(UserLoginDTO userToLog)
         {
-           
-            User user = await _iUsersRepository.loginUser(userToLog);
+
+            User user = await _iUsersRepository.LoginUser(userToLog);
             if (user == null)
                 return null;
             return _mapper.Map<User, UserProfileDTO>(user);
         }
 
-        public async Task<UserProfileDTO> updateUser(UserRegisterDTO userToUpdate, int id)
+        public async Task<UserProfileDTO> UpdateUser(UserRegisterDTO userToUpdate, int id)
         {
             var checkPassword = _iPasswordService.checkStrengthPassword(userToUpdate.Password);
             if (checkPassword.strength < 2)
@@ -72,13 +70,13 @@ namespace Services
             }
             User user = _mapper.Map<UserRegisterDTO, User>(userToUpdate);
             user.UserId = id;
-            user = await _iUsersRepository.updateUser(user, id);
+            user = await _iUsersRepository.UpdateUser(user, id);
             return _mapper.Map<User, UserProfileDTO>(user);
         }
 
-        public async Task deleteUser(int id)
+        public async Task DeleteUser(int id)
         {
-            await _iUsersRepository.deleteUser(id);
+            await _iUsersRepository.DeleteUser(id);
         }
     }
 }

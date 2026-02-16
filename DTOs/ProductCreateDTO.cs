@@ -19,9 +19,5 @@ namespace DTOs
         int Rooms,
         string TransactionType
 
-    )
-    {
-
-    };
-
+    );
 }

@@ -11,10 +11,13 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        ICategoriesServies _iCategoryServices;
-        public CategoryController(ICategoriesServies iCategoryServices)
+        private readonly ICategoriesServies _iCategoryServices;
+        private readonly ILogger<CategoryController> _logger;
+
+        public CategoryController(ICategoriesServies iCategoryServices, ILogger<CategoryController> logger)
         {
             _iCategoryServices = iCategoryServices;
+            _logger = logger;
         }
 
         // GET: api/<CategoryController>
@@ -31,11 +34,15 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryCreateDTO>> AddCategory(CategoryCreateDTO category)
+        public async Task<ActionResult<CategoryDTO>> AddCategory(CategoryCreateDTO category)
         {
             CategoryDTO newCategory = await _iCategoryServices.AddCategory(category);
             if (newCategory == null)
+            {
+                _logger.LogWarning("Failed to create category with name {Name}", category.CategoryName);
                 return BadRequest();
+            }
+            _logger.LogInformation("Category {CategoryName} created with ID: {Id}", newCategory.CategoryName, newCategory.CategoryId);
             return CreatedAtAction(nameof(GetCategoryById), new { id = newCategory.CategoryId }, newCategory);
             //return await _iOrderService.Invite(order);
         }
@@ -47,8 +54,10 @@ namespace WebApiShop.Controllers
             var success = await _iCategoryServices.DeleteCategory(id);
             if (!success)
             {
+                _logger.LogWarning("Attempted to delete non-existent category {id}", id);
                 return NotFound();
             }
+            _logger.LogInformation("Category {id} was deleted from the system", id);
             return NoContent();
         }
 
@@ -59,9 +68,11 @@ namespace WebApiShop.Controllers
             CategoryDTO updatedCategory = await _iCategoryServices.UpdateCategory(id, categoryUpdate);
             if (updatedCategory == null)
             {
-                return NotFound(); 
+                _logger.LogWarning("Update failed: Category {id} not found", id);
+                return NotFound();
             }
-            return Ok(updatedCategory); 
+            _logger.LogInformation("Category {id} updated successfully", id);
+            return Ok(updatedCategory);
         }
 
 

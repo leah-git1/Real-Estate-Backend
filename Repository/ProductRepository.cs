@@ -35,17 +35,17 @@ namespace Repository
             //    .AsNoTracking()
             //    .ToListAsync();
             var query = _ShopContext.Products.Include(p => p.ProductImages).Where(product =>
-            //(desc == null ? (true) : (product.Description.Contains(desc)))
-            ((minPrice == null) ? (true) : (product.Price >= minPrice))
-            && ((maxPrice == null) ? (true) : (product.Price <= maxPrice))
-            && ((categoryIds.Length == 0) ? (true) : (categoryIds.Contains(product.CategoryId))
-             && (rooms == null || product.Rooms == rooms) &&
-                    (beds == null || product.Beds == beds) &&
-                    (city == null || product.City.Contains(city)) &&
-                    (product.IsAvailable == true)))
-            .OrderBy(product => product.Price);
+                ((minPrice == null) ? (true) : (product.Price >= minPrice))
+                && ((maxPrice == null) ? (true) : (product.Price <= maxPrice))
+                && ((categoryIds == null || categoryIds.Length == 0) ? (true) : (categoryIds.Contains(product.CategoryId)))
+                && ((rooms == null) ? (true) : (product.Rooms == rooms))
+                && ((beds == null) ? (true) : (product.Beds == beds))
+                && ((city == null) ? (true) : (product.City.Contains(city)))
+                && (product.IsAvailable == true)
+            ).OrderBy(product => product.Price);
 
             Console.WriteLine(query.ToQueryString());
+
             List<Product> products = await query.Skip(((position - 1) * skip))
             .Take(skip).Include(product => product.Category).ToListAsync();
             var total = await query.CountAsync();

@@ -21,41 +21,44 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserProfileDTO>>> Get()
+        public async Task<ActionResult<IEnumerable<UserProfileDTO>>> GetAllUsers()
         {
-            IEnumerable<UserProfileDTO> users = await _iUsersServices.getAllUsers();
+            IEnumerable<UserProfileDTO> users = await _iUsersServices.GetAllUsers();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserProfileDTO>> Get(int id)
+        public async Task<ActionResult<UserProfileDTO>> GetUserById(int id)
         {
-            UserProfileDTO user = await _iUsersServices.getUserById(id);
+            UserProfileDTO user = await _iUsersServices.GetUserById(id);
             if (user == null)
             {
+                _logger.LogWarning("User with ID {id} was not found", id);
                 return NotFound();
             }
             return Ok(user);
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserProfileDTO>> Post([FromBody] UserRegisterDTO user)
+        public async Task<ActionResult<UserProfileDTO>> RegisterUser(UserRegisterDTO user)
         {
             try
             {
-                UserProfileDTO result = await _iUsersServices.registerUser(user);
-                return CreatedAtAction(nameof(Get), new { id = result.UserId }, result);
+                UserProfileDTO result = await _iUsersServices.RegisterUser(user);
+                _logger.LogInformation("User registered successfully: ID: {Id}, Email: {Email}", result.UserId, user.Email);
+                return CreatedAtAction(nameof(GetAllUsers), new { id = result.UserId }, result);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Registration failed for user email: {Email}", user.Email);
                 return BadRequest(new { message = ex.Message });
-            }            
+            }
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserProfileDTO>> Login([FromBody] UserLoginDTO userToLog)
+        public async Task<ActionResult<UserProfileDTO>> LoginUser([FromBody] UserLoginDTO userToLog)
         {
-            UserProfileDTO user = await _iUsersServices.loginUser(userToLog);
+            UserProfileDTO user = await _iUsersServices.LoginUser(userToLog);
             if (user == null)
             {
                 _logger.LogInformation("Login failed for email: {Email}", userToLog.Email);
@@ -66,24 +69,31 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] UserRegisterDTO userToUpdate)
+        public async Task<ActionResult> UpdateUser(int id, [FromBody] UserRegisterDTO userToUpdate)
         {
-            UserProfileDTO user = await _iUsersServices.updateUser(userToUpdate, id);
+            UserProfileDTO user = await _iUsersServices.UpdateUser(userToUpdate, id);
             if (user == null)
             {
+                _logger.LogWarning("Update failed: User with ID {id} not found or invalid data", id);
                 return BadRequest();
             }
+            _logger.LogInformation("User with ID {id} updated successfully", id);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteUser(int id)
         {
-            UserProfileDTO user = await _iUsersServices.getUserById(id);
+            UserProfileDTO user = await _iUsersServices.GetUserById(id);
 
-            if (user == null) return NotFound();
+            if (user == null)
+            {
+                _logger.LogWarning("Delete failed: Attempted to delete non-existent user with ID {id}", id);
+                return NotFound();
+            }
 
-            await _iUsersServices.deleteUser(id);
+            await _iUsersServices.DeleteUser(id);
+            _logger.LogInformation("User with ID {id} was deleted from the system", id);
             return NoContent();
         }
     }

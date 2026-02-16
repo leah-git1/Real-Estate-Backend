@@ -4,11 +4,11 @@ namespace Services
 {
     public interface IUsersServices
     {
-        Task deleteUser(int id);
-        Task<IEnumerable<UserProfileDTO>> getAllUsers();
-        Task<UserProfileDTO> getUserById(int id);
-        Task<UserProfileDTO> loginUser(UserLoginDTO userToLog);
-        Task<UserProfileDTO> registerUser(UserRegisterDTO userToRegister);
-        Task<UserProfileDTO> updateUser(UserRegisterDTO userToUpdate, int id);
+        Task DeleteUser(int id);
+        Task<IEnumerable<UserProfileDTO>> GetAllUsers();
+        Task<UserProfileDTO> GetUserById(int id);
+        Task<UserProfileDTO> LoginUser(UserLoginDTO userToLog);
+        Task<UserProfileDTO> RegisterUser(UserRegisterDTO userToRegister);
+        Task<UserProfileDTO> UpdateUser(UserRegisterDTO userToUpdate, int id);
     }
 }
