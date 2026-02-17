@@ -24,7 +24,7 @@ builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 
 builder.Host.UseNLog();
-builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-TB3DT9H; Database = RealEstateDB_; Trusted_Connection = True; TrustServerCertificate = True;"));
+builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-1VUANBN; Database = RealEstateDB; Trusted_Connection = True; TrustServerCertificate = True;"));
 //builder.Configuration.GetConnectionString("DefaultConnection")
 // Add services to the container.
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -37,11 +37,13 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:4200") 
+        policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
+
+
 
 var app = builder.Build();
 

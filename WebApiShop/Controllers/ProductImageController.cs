@@ -84,6 +84,15 @@ namespace WebApiShop.Controllers
             _logger.LogInformation("Image {id} was deleted successfully", id);
             return NoContent();
         }
+        [HttpPost("upload")]
+        public async Task<ActionResult<string>> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded");
+
+            string imageUrl = await _iProductImageService.UploadImage(file);
+            return Ok(imageUrl);
+        }
 
     }
 }

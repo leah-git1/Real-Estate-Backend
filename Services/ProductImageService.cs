@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DTOs;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using Repository;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,23 @@ namespace Services
             if (image == null) return false;
             await _iProductImageRepository.DeleteImage(image);
             return true;
+        }
+
+        public async Task<string> UploadImage(IFormFile file)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            return $"/images/{uniqueFileName}";
         }
     }
 }
