@@ -36,7 +36,7 @@ namespace Repository
         {
             return await _ShopContext.Orders
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi=>oi.Product)
+                .ThenInclude(oi => oi.Product)
                 .ToListAsync();
         }
 
@@ -75,6 +75,20 @@ namespace Repository
             return await _ShopContext.OrderItems
                 .Where(oi => oi.ProductId == productId)
                 .ToListAsync();
+        }
+
+        public async Task<List<(DateTime Start, DateTime End)>> GetProductOccupiedRanges(int productId, int month, int year)
+        {
+            var firstDayOfMonth = new DateTime(year, month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            return await _ShopContext.OrderItems
+                .Where(oi => oi.ProductId == productId &&
+                             oi.StartDate <= lastDayOfMonth &&
+                             oi.EndDate >= firstDayOfMonth)
+                .Select(oi => new { oi.StartDate, oi.EndDate })
+                .ToListAsync()
+                .ContinueWith(t => t.Result.Select(x => (x.StartDate.Value, x.EndDate.Value)).ToList());
         }
 
     }

@@ -106,5 +106,14 @@ namespace WebApiShop.Controllers
             _logger.LogInformation("Order with ID {OrderId} marked as delivered", orderId);
             return NoContent();
         }
+        [HttpGet("occupied-dates/{productId}")]
+        public async Task<IActionResult> GetOccupiedDates(int productId, [FromQuery] int month, [FromQuery] int year)
+        {
+            if (month < 1 || month > 12) return BadRequest("חודש לא תקין");
+
+            var result = await _iOrderService.GetOccupiedDatesForProduct(productId, month, year);
+
+            return Ok(result);
+        }
     }
 }

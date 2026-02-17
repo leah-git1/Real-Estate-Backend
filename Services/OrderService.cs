@@ -21,7 +21,7 @@ namespace Services
         {
             this._iOrderRepository = iOrderRepository;
             this._iProductRepository = iProductRepository;
-            this._iProductService = iProductService; 
+            this._iProductService = iProductService;
             this._mapper = mapper;
         }
 
@@ -66,7 +66,7 @@ namespace Services
                 Product p = await _iProductRepository
                     .GetProductById(orderItem.ProductId);
 
-                
+
                 if (p.TransactionType == "Sale")
                 {
                     p.IsAvailable = false;
@@ -92,6 +92,36 @@ namespace Services
         public async Task<bool> OrderDelivered(int orderId)
         {
             return await _iOrderRepository.OrderDelivered(orderId);
+        }
+
+        public async Task<OccupiedDatesResponseDTO> GetOccupiedDatesForProduct(int productId, int month, int year)
+        {
+            var ranges = await _iOrderRepository.GetProductOccupiedRanges(productId, month, year);
+
+            var occupiedDatesSet = new HashSet<DateTime>();
+
+            foreach (var range in ranges)
+            {
+                for (var date = range.Start; date <= range.End; date = date.AddDays(1))
+                {
+                    if (date.Month == month && date.Year == year)
+                    {
+                        occupiedDatesSet.Add(date.Date);
+                    }
+                }
+            }
+
+            var formattedDates = occupiedDatesSet
+                .OrderBy(d => d)
+                .Select(d => d.ToString("yyyy-MM-dd"))
+                .ToList();
+
+            return new OccupiedDatesResponseDTO(
+                ProductId: productId,
+                Month: month,
+                Year: year,
+                OccupiedDates: formattedDates
+            );
         }
     }
 }
