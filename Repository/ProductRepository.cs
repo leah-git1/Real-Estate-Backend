@@ -66,9 +66,10 @@ namespace Repository
         {
             return await _ShopContext.Products
                 .Include(p => p.Category)
-                .Where(p => p.OwnerId == ownerId)
+                .Where(p => p.OwnerId == ownerId && p.IsAvailable != false)
                 .ToListAsync();
         }
+        
 
         public async Task<Product> AddProduct(Product product)
         {
@@ -110,8 +111,16 @@ namespace Repository
             if (dto.TransactionType != null)
                 product.TransactionType = dto.TransactionType;
 
+            if (dto.IsAvailable != null)
+                product.IsAvailable = dto.IsAvailable;
+            if (dto.IsAvailable != null)
+            {
+                Console.WriteLine($"Updating IsAvailable from {product.IsAvailable} to {dto.IsAvailable}");
+                product.IsAvailable = dto.IsAvailable;
+            }
             if (!string.IsNullOrEmpty(dto.ImageUrl))
                 product.ImageUrl = dto.ImageUrl;
+
 
             if (dto.ProductImages != null)
             {

@@ -16,6 +16,8 @@ namespace DTOs
      int? Rooms,
      int? CategoryId,
      string CategoryCategoryName,
-     string TransactionType
+     string TransactionType,
+     bool IsAvailable
+
     );
 }

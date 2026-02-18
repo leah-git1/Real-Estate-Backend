@@ -28,10 +28,12 @@ namespace Services
             if (skip <= 0) skip = 10;
             if (position <= 0) position = 1;
             (List<Product>, int) response = await _iProductRepository.GetProducts(categoryIds, city, minPrice, maxPrice, rooms, beds, position, skip);
+            response.Item1 = response.Item1.Where(p => p.IsAvailable == true).ToList();
+
             List<ProductSummaryDTO> data = _mapper.Map<List<Product>, List<ProductSummaryDTO>>(response.Item1);
             PageResponseDTO<ProductSummaryDTO> pageResponse = new();
             pageResponse.Data = data;
-            pageResponse.TotalItems = response.Item2;
+            pageResponse.TotalItems = response.Item1.Count; 
             pageResponse.CurrentPage = position;
             pageResponse.PageSize = skip;
             pageResponse.HasPreviousPage = position > 1;
@@ -42,21 +44,25 @@ namespace Services
             return pageResponse;
         }
 
+
         public async Task<ProductDetailsDTO> GetProductById(int id)
         {
             Product product = await _iProductRepository.GetProductById(id);
-            if (product == null)
+            if (product == null || product.IsAvailable == false)
             {
                 return null;
             }
             return _mapper.Map<Product, ProductDetailsDTO>(product);
         }
 
+
         public async Task<List<ProductSummaryDTO>> GetProductsByOwnerId(int ownerId)
-        {
-            List<Product> ownerProducts = await _iProductRepository.GetProductsByOwnerId(ownerId);
-            return _mapper.Map<List<Product>, List<ProductSummaryDTO>>(ownerProducts);
-        }
+            {
+                List<Product> ownerProducts = await _iProductRepository.GetProductsByOwnerId(ownerId);
+                ownerProducts = ownerProducts.Where(p => p.IsAvailable == true).ToList();
+                return _mapper.Map<List<Product>, List<ProductSummaryDTO>>(ownerProducts);
+            }
+        
 
         public async Task<ProductDetailsDTO> AddProduct(ProductCreateDTO productCreateDto)
         {
@@ -65,20 +71,31 @@ namespace Services
             return _mapper.Map<Product, ProductDetailsDTO>(newProduct);
         }
 
-        public async Task<ProductDetailsDTO> UpdateProduct(int id, ProductUpdateDTO productUpdateDto)
-        {
-            Product productToUpdate = _mapper.Map<ProductUpdateDTO, Product>(productUpdateDto);
-            Product updatedProduct = await _iProductRepository.UpdateProduct(id, productToUpdate);
-            if (updatedProduct == null)
+ 
+            public async Task<ProductDetailsDTO> UpdateProduct(int id, ProductUpdateDTO productUpdateDto)
             {
-                return null;
-            }
-            if (productUpdateDto.CategoryId <= 0)
-            {
-                return null;
-            }
-            return _mapper.Map<Product, ProductDetailsDTO>(updatedProduct);
+                Product existingProduct = await _iProductRepository.GetProductById(id);
+                if (existingProduct == null)
+                {
+                    return null;
+                }
+
+                if (productUpdateDto.Title != null) existingProduct.Title = productUpdateDto.Title;
+                if (productUpdateDto.Description != null) existingProduct.Description = productUpdateDto.Description;
+                if (productUpdateDto.Price.HasValue) existingProduct.Price = productUpdateDto.Price.Value;
+                if (productUpdateDto.City != null) existingProduct.City = productUpdateDto.City;
+                if (productUpdateDto.CategoryId.HasValue) existingProduct.CategoryId = productUpdateDto.CategoryId.Value;
+                if (productUpdateDto.TransactionType != null) existingProduct.TransactionType = productUpdateDto.TransactionType;
+                if (productUpdateDto.Rooms.HasValue) existingProduct.Rooms = productUpdateDto.Rooms;
+                if (productUpdateDto.Beds.HasValue) existingProduct.Beds = productUpdateDto.Beds;
+                if (productUpdateDto.IsAvailable.HasValue) existingProduct.IsAvailable = productUpdateDto.IsAvailable.Value;
+                if (productUpdateDto.ImageUrl != null) existingProduct.ImageUrl = productUpdateDto.ImageUrl;
+
+                Product updatedProduct = await _iProductRepository.UpdateProduct(id, existingProduct);
+                return _mapper.Map<Product, ProductDetailsDTO>(updatedProduct);
+           
         }
+
 
         public async Task<bool> DeleteProduct(int id)
         {

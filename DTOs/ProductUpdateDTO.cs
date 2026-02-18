@@ -16,7 +16,8 @@ namespace DTOs
         string? City,
         int? Beds,
         int? Rooms,
-        string? TransactionType
+        string? TransactionType,
+        bool? IsAvailable
     );
 
 }
