@@ -74,7 +74,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateUser(int id, [FromBody] UserRegisterDTO userToUpdate)
+        public async Task<ActionResult> UpdateUser(int id, [FromBody] UserUpdateDTO userToUpdate)
         {
             UserProfileDTO user = await _iUsersServices.UpdateUser(userToUpdate, id);
             if (user == null)
@@ -83,7 +83,7 @@ namespace WebApiShop.Controllers
                 return BadRequest();
             }
             _logger.LogInformation("User with ID {id} updated successfully", id);
-            return NoContent();
+            return Ok(user);
         }
 
         [HttpDelete("{id}")]

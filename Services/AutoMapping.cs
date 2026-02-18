@@ -11,6 +11,8 @@ namespace Services
             // ================= Users =================
             CreateMap<User, UserProfileDTO>();
             CreateMap<UserRegisterDTO, User>();
+            CreateMap<UserUpdateDTO,User>();
+            CreateMap<User,UserUpdateDTO>();
 
             // ================= Products =================
             CreateMap<Product, ProductSummaryDTO>();

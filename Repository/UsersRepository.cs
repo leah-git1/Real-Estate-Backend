@@ -40,10 +40,31 @@ namespace Repository
 
         public async Task<User> UpdateUser(User userToUpdate, int id)
         {
-            _ShopContext.Users.Update(userToUpdate);
+            User existingUser = await _ShopContext.Users
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (existingUser == null)
+                return null;
+
+            if (userToUpdate.FullName != null)
+                existingUser.FullName = userToUpdate.FullName;
+
+            if (userToUpdate.Email != null)
+                existingUser.Email = userToUpdate.Email;
+
+            if (userToUpdate.Password != null)
+                existingUser.Password = userToUpdate.Password;
+
+            if (userToUpdate.Phone != null)
+                existingUser.Phone = userToUpdate.Phone;
+
+            if (userToUpdate.Address != null)
+                existingUser.Address = userToUpdate.Address;
+
             await _ShopContext.SaveChangesAsync();
-            return userToUpdate;
+            return existingUser;
         }
+
 
         public async Task DeleteUser(int id)
         {

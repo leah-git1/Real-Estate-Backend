@@ -9,6 +9,6 @@ namespace Services
         Task<UserProfileDTO> GetUserById(int id);
         Task<UserProfileDTO> LoginUser(UserLoginDTO userToLog);
         Task<UserProfileDTO> RegisterUser(UserRegisterDTO userToRegister);
-        Task<UserProfileDTO> UpdateUser(UserRegisterDTO userToUpdate, int id);
+        Task<UserProfileDTO> UpdateUser(UserUpdateDTO userToUpdate, int id);
     }
 }

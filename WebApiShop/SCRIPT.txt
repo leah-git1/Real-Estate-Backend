@@ -38,9 +38,11 @@ CREATE TABLE Products (
     IsAvailable BIT NULL DEFAULT 1,
     CreatedDate DATETIME NULL DEFAULT GETDATE(),
     TransactionType NVARCHAR(20) NOT NULL DEFAULT 'Sale',
-    
-    CONSTRAINT FK_Product_Category FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID),
-    CONSTRAINT FK_Product_Owner FOREIGN KEY (OwnerID) REFERENCES Users(UserID)
+
+    CONSTRAINT FK_Product_Category FOREIGN KEY (CategoryID) 
+        REFERENCES Categories(CategoryID),
+    CONSTRAINT FK_Product_Owner FOREIGN KEY (OwnerID) 
+        REFERENCES Users(UserID)
 );
 
 -- טבלת הזמנות
@@ -50,8 +52,9 @@ CREATE TABLE Orders (
     OrderDate DATETIME NULL DEFAULT GETDATE(),
     TotalAmount DECIMAL(18, 2) NOT NULL,
     Status NVARCHAR(50) NULL DEFAULT 'Pending',
-    
-    CONSTRAINT FK_Order_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
+
+    CONSTRAINT FK_Order_User FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID)
 );
 
 -- טבלת פרטי הזמנה
@@ -62,9 +65,11 @@ CREATE TABLE OrderItems (
     StartDate DATETIME NULL,
     EndDate DATETIME NULL,
     PriceAtPurchase DECIMAL(18, 2) NOT NULL,
-    
-    CONSTRAINT FK_Item_Order FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
-    CONSTRAINT FK_Item_Product FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+
+    CONSTRAINT FK_Item_Order FOREIGN KEY (OrderID) 
+        REFERENCES Orders(OrderID) ON DELETE CASCADE,
+    CONSTRAINT FK_Item_Product FOREIGN KEY (ProductID) 
+        REFERENCES Products(ProductID)
 );
 
 -- טבלת תמונות נוספות
@@ -72,96 +77,9 @@ CREATE TABLE ProductImages (
     ImageID INT PRIMARY KEY IDENTITY(1,1),
     ProductID INT NOT NULL,
     AdditionalImageUrl NVARCHAR(MAX) NOT NULL,
-    
-    CONSTRAINT FK_ProductImages_Products FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
-);
 
--- טבלת לוגים
-CREATE TABLE Ratings (
-    RatingId INT PRIMARY KEY IDENTITY(1,1),
-    Host NVARCHAR(255) NULL,
-    Method NVARCHAR(50) NULL,
-    Path NVARCHAR(500) NULL,
-    RecordDate DATETIME NULL DEFAULT GETDATE(),
-    Referer NVARCHAR(500) NULL,
-    UserAgent NVARCHAR(1000) NULL
-);
-GOCREATE DATABASE RealEstateDB_;
-GO
-
-USE RealEstateDB_;
-GO
-
--- טבלת משתמשים
-CREATE TABLE Users (
-    UserID INT PRIMARY KEY IDENTITY(1,1),
-    FullName NVARCHAR(100) NOT NULL,
-    Email NVARCHAR(100) NOT NULL,
-    Password NVARCHAR(255) NOT NULL,
-    Phone NVARCHAR(20) NULL,
-    Address NVARCHAR(MAX) NULL, -- הוסף לפי Entity
-    IsAdmin BIT NULL DEFAULT 0,
-    CONSTRAINT UQ_Users_Email UNIQUE (Email)
-);
-
--- טבלת קטגוריות
-CREATE TABLE Categories (
-    CategoryID INT PRIMARY KEY IDENTITY(1,1),
-    CategoryName NVARCHAR(50) NOT NULL,
-    Description NVARCHAR(500) NULL
-);
-
--- טבלת מוצרים
-CREATE TABLE Products (
-    ProductID INT PRIMARY KEY IDENTITY(1,1),
-    Title NVARCHAR(200) NOT NULL,
-    Description NVARCHAR(MAX) NULL,
-    Price DECIMAL(18, 2) NOT NULL,
-    ImageUrl NVARCHAR(MAX) NULL,
-    CategoryID INT NULL,
-    City NVARCHAR(100) NULL,
-    Rooms INT NULL,
-    Beds INT NULL DEFAULT 0,
-    OwnerID INT NULL,
-    IsAvailable BIT NULL DEFAULT 1,
-    CreatedDate DATETIME NULL DEFAULT GETDATE(),
-    TransactionType NVARCHAR(20) NOT NULL DEFAULT 'Sale',
-    
-    CONSTRAINT FK_Product_Category FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID),
-    CONSTRAINT FK_Product_Owner FOREIGN KEY (OwnerID) REFERENCES Users(UserID)
-);
-
--- טבלת הזמנות
-CREATE TABLE Orders (
-    OrderID INT PRIMARY KEY IDENTITY(1,1),
-    UserID INT NOT NULL,
-    OrderDate DATETIME NULL DEFAULT GETDATE(),
-    TotalAmount DECIMAL(18, 2) NOT NULL,
-    Status NVARCHAR(50) NULL DEFAULT 'Pending',
-    
-    CONSTRAINT FK_Order_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
-);
-
--- טבלת פרטי הזמנה
-CREATE TABLE OrderItems (
-    OrderItemID INT PRIMARY KEY IDENTITY(1,1),
-    OrderID INT NOT NULL,
-    ProductID INT NOT NULL,
-    StartDate DATETIME NULL,
-    EndDate DATETIME NULL,
-    PriceAtPurchase DECIMAL(18, 2) NOT NULL,
-    
-    CONSTRAINT FK_Item_Order FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
-    CONSTRAINT FK_Item_Product FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
-);
-
--- טבלת תמונות נוספות
-CREATE TABLE ProductImages (
-    ImageID INT PRIMARY KEY IDENTITY(1,1),
-    ProductID INT NOT NULL,
-    AdditionalImageUrl NVARCHAR(MAX) NOT NULL,
-    
-    CONSTRAINT FK_ProductImages_Products FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+    CONSTRAINT FK_ProductImages_Products FOREIGN KEY (ProductID) 
+        REFERENCES Products(ProductID) ON DELETE CASCADE
 );
 
 -- טבלת לוגים

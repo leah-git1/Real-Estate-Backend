@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using DTOs;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -76,18 +77,58 @@ namespace Repository
             return product;
         }
 
-        public async Task<Product> UpdateProduct(int id, Product productToUpdate)
+        public async Task<Product?> UpdateProduct(int id, Product dto)
         {
-            Product existingProduct = await _ShopContext.Products.FindAsync(id);
-            if (existingProduct == null)
-            {
+            var product = await _ShopContext.Products
+                .Include(p => p.ProductImages)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null)
                 return null;
+
+            if (dto.Title != null)
+                product.Title = dto.Title;
+
+            if (dto.Description != null)
+                product.Description = dto.Description;
+
+            if (dto.Price != null)
+                product.Price = dto.Price;
+
+            if (dto.CategoryId != null)
+                product.CategoryId = dto.CategoryId;
+
+            if (dto.City != null)
+                product.City = dto.City;
+
+            if (dto.Beds != null)
+                product.Beds = dto.Beds.Value;
+
+            if (dto.Rooms != null)
+                product.Rooms = dto.Rooms.Value;
+
+            if (dto.TransactionType != null)
+                product.TransactionType = dto.TransactionType;
+
+            if (!string.IsNullOrEmpty(dto.ImageUrl))
+                product.ImageUrl = dto.ImageUrl;
+
+            if (dto.ProductImages != null)
+            {
+                _ShopContext.ProductImages.RemoveRange(product.ProductImages);
+
+                product.ProductImages = dto.ProductImages
+                    .Select(img => new ProductImage
+                    {
+                        AdditionalImageUrl = img.AdditionalImageUrl
+                    })
+                    .ToList();
             }
-            productToUpdate.ProductId = id;
-            _ShopContext.Entry(existingProduct).CurrentValues.SetValues(productToUpdate);
+
             await _ShopContext.SaveChangesAsync();
-            return existingProduct;
+            return product;
         }
+
 
         public async Task<bool> DeleteProduct(int id)
         {

@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 namespace DTOs
 {
     public record ProductUpdateDTO(
-        string Title,
-        string Description,
-        decimal Price,
-        string MainImageUrl,
-        List<ProductImageUrlDTO> AdditionalImages,
-        int CategoryId,
-        string City,
-        int Beds,
-        string TransactionType
+        string? Title,
+        string? Description,
+        decimal? Price,
+        string? ImageUrl,
+        List<ProductImageUrlDTO>? AdditionalImages,
+        int? CategoryId,
+        string? City,
+        int? Beds,
+        int? Rooms,
+        string? TransactionType
     );
 
 }

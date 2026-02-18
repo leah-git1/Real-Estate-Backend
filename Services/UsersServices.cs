@@ -61,14 +61,17 @@ namespace Services
             return _mapper.Map<User, UserProfileDTO>(user);
         }
 
-        public async Task<UserProfileDTO> UpdateUser(UserRegisterDTO userToUpdate, int id)
+        public async Task<UserProfileDTO> UpdateUser(UserUpdateDTO userToUpdate, int id)
         {
-            var checkPassword = _iPasswordService.checkStrengthPassword(userToUpdate.Password);
-            if (checkPassword.strength < 2)
+            if (userToUpdate.Password != null)
             {
-                return null;
+                var checkPassword = _iPasswordService.checkStrengthPassword(userToUpdate.Password);
+                if (checkPassword.strength < 2)
+                {
+                    return null;
+                }
             }
-            User user = _mapper.Map<UserRegisterDTO, User>(userToUpdate);
+            User user = _mapper.Map<UserUpdateDTO, User>(userToUpdate);
             user.UserId = id;
             user = await _iUsersRepository.UpdateUser(user, id);
             return _mapper.Map<User, UserProfileDTO>(user);
