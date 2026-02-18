@@ -22,6 +22,7 @@ builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 builder.Host.UseNLog();
 builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-1VUANBN; Database = RealEstateDB; Trusted_Connection = True; TrustServerCertificate = True;"));
@@ -39,7 +40,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .WithExposedHeaders("IsAdmin");
     });
 });
 
@@ -67,7 +69,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
 app.UseErrorHandling();
+app.UseMiddleware<AdminAuthorizationMiddleware>();
 app.UseRating();
 
 app.UseStaticFiles();

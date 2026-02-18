@@ -42,14 +42,22 @@ namespace WebApiShop.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductDetailsDTO>> AddProduct(ProductCreateDTO productCreateDto)
         {
-            ProductDetailsDTO newProduct = await _iProductService.AddProduct(productCreateDto);
-            if(newProduct==null)
+            try
             {
-                _logger.LogWarning("Failed to add product with name {Name}", productCreateDto.Title);
-                return BadRequest();
+                ProductDetailsDTO newProduct = await _iProductService.AddProduct(productCreateDto);
+                if(newProduct==null)
+                {
+                    _logger.LogWarning("Failed to add product with name {Name}", productCreateDto.Title);
+                    return BadRequest();
+                }
+                _logger.LogInformation("Product added successfully with ID: {Id}", newProduct.ProductId);
+                return CreatedAtAction(nameof(GetProductById), new { id = newProduct.ProductId }, newProduct);
             }
-            _logger.LogInformation("Product added successfully with ID: {Id}", newProduct.ProductId);
-            return CreatedAtAction(nameof(GetProductById), new { id = newProduct.ProductId }, newProduct);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding product: {Message}", ex.Message);
+                return StatusCode(500, new { error = ex.Message, innerError = ex.InnerException?.Message, stackTrace = ex.StackTrace });
+            }
         }
 
         [HttpPut("{id}")]

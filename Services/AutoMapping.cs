@@ -41,7 +41,10 @@ namespace Services
             CreateMap<OrderDTO, Order>();
             CreateMap<OrderCreateDTO, Order>();
             CreateMap<Order, OrderHistoryDTO>();
-            CreateMap<Order, OrderHistoryAdminDTO>();
+            CreateMap<Order, OrderHistoryAdminDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : "לא ידוע"));
+            CreateMap<Order, OrderAdminDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : "לא ידוע"));
 
             // ================= Order Items =================
             CreateMap<OrderItem, OrderItemDTO>();

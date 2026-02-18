@@ -9,6 +9,7 @@ namespace DTOs
     public record OrderHistoryAdminDTO(
         int OrderId,
         int UserId,
+        string UserName,
         DateTime OrderDate,
         decimal TotalAmount,
         string Status,

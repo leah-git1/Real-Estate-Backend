@@ -12,5 +12,6 @@ namespace Repository
         Task<List<(DateTime Start, DateTime End)>> GetProductOccupiedRanges(int productId, int month, int year);
         Task<bool> OrderDelivered(int orderId);
         Task<Order> UpdateOrderStatus(int orderId, string status);
+        Task DeleteOrder(int orderId);
     }
 }

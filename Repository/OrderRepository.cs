@@ -35,6 +35,7 @@ namespace Repository
         public async Task<List<Order>> GetAllOrders()
         {
             return await _ShopContext.Orders
+                .Include(o => o.User)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
                 .ToListAsync();
@@ -91,5 +92,14 @@ namespace Repository
                 .ContinueWith(t => t.Result.Select(x => (x.StartDate.Value, x.EndDate.Value)).ToList());
         }
 
+        public async Task DeleteOrder(int orderId)
+        {
+            Order order = await _ShopContext.Orders.FindAsync(orderId);
+            if (order != null)
+            {
+                _ShopContext.Orders.Remove(order);
+                await _ShopContext.SaveChangesAsync();
+            }
+        }
     }
 }

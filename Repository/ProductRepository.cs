@@ -152,5 +152,12 @@ namespace Repository
             return true;
         }
 
+        public async Task<List<Product>> GetAllProductsForAdmin()
+        {
+            return await _ShopContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductImages)
+                .ToListAsync();
+        }
     }
 }
