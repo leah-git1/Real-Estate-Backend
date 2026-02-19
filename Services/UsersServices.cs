@@ -10,12 +10,14 @@ namespace Services
     {
         private readonly IUsersRepository _iUsersRepository;
         private readonly IPasswordService _iPasswordService;
+        private readonly IProductRepository _iProductRepository;
         private readonly IMapper _mapper;
 
-        public UsersServices(IUsersRepository iusersRepository, IPasswordService passwordService, IMapper mapper)
+        public UsersServices(IUsersRepository iusersRepository, IPasswordService passwordService, IProductRepository iProductRepository, IMapper mapper)
         {
             this._iUsersRepository = iusersRepository;
             this._iPasswordService = passwordService;
+            this._iProductRepository = iProductRepository;
             this._mapper = mapper;
         }
 
@@ -79,6 +81,13 @@ namespace Services
 
         public async Task DeleteUser(int id)
         {
+            List<Product> userProducts = await _iProductRepository.GetProductsByOwnerId(id);
+            foreach (Product product in userProducts)
+            {
+                Product updateDto = new Product { IsAvailable = false };
+                await _iProductRepository.UpdateProduct(product.ProductId, updateDto);
+            }
+
             await _iUsersRepository.DeleteUser(id);
         }
     }

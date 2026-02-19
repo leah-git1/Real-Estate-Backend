@@ -8,13 +8,15 @@ namespace Services
     public class AdminService : IAdminService
     {
         private readonly IUsersRepository _usersRepository;
+        private readonly IUsersServices _usersServices;
         private readonly IProductRepository _productRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
 
-        public AdminService(IUsersRepository usersRepository, IProductRepository productRepository, IOrderRepository orderRepository, IMapper mapper)
+        public AdminService(IUsersRepository usersRepository, IUsersServices usersServices, IProductRepository productRepository, IOrderRepository orderRepository, IMapper mapper)
         {
             _usersRepository = usersRepository;
+            _usersServices = usersServices;
             _productRepository = productRepository;
             _orderRepository = orderRepository;
             _mapper = mapper;
@@ -50,7 +52,7 @@ namespace Services
             User user = await _usersRepository.GetUserById(id);
             if (user == null)
                 return false;
-            await _usersRepository.DeleteUser(id);
+            await _usersServices.DeleteUser(id);
             return true;
         }
 
