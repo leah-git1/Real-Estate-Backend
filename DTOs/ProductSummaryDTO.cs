@@ -15,6 +15,7 @@ namespace DTOs
      int? Beds,
      int? Rooms,
      int? CategoryId,
+     int? OwnerId,
      string CategoryCategoryName,
      string TransactionType,
      bool IsAvailable

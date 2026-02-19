@@ -33,7 +33,7 @@ namespace Services
             List<ProductSummaryDTO> data = _mapper.Map<List<Product>, List<ProductSummaryDTO>>(response.Item1);
             PageResponseDTO<ProductSummaryDTO> pageResponse = new();
             pageResponse.Data = data;
-            pageResponse.TotalItems = response.Item1.Count; 
+            pageResponse.TotalItems = response.Item2; 
             pageResponse.CurrentPage = position;
             pageResponse.PageSize = skip;
             pageResponse.HasPreviousPage = position > 1;

@@ -49,6 +49,7 @@ namespace Repository
 
             List<Product> products = await query.Skip(((position - 1) * skip))
             .Take(skip).Include(product => product.Category).ToListAsync();
+
             var total = await query.CountAsync();
             return (products, total);
         }
@@ -69,7 +70,7 @@ namespace Repository
                 .Where(p => p.OwnerId == ownerId && p.IsAvailable != false)
                 .ToListAsync();
         }
-        
+
 
         public async Task<Product> AddProduct(Product product)
         {
