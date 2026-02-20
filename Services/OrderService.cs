@@ -48,6 +48,8 @@ namespace Services
         {
             foreach (OrderItemDTO item in createOrder.OrderItems)
             {
+                if (!item.StartDate.HasValue || !item.EndDate.HasValue)
+                    continue;
                 bool isAvailable = await _iProductService
                     .CheckAvailability(item.ProductId, item.StartDate, item.EndDate);
 

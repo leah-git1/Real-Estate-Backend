@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace DTOs
 {
     public record OrderItemDTO(
-        int ProductId,
-        decimal PriceAtPurchase,
-        DateTime StartDate, 
-        DateTime EndDate  
-    );
+    int ProductId,
+    decimal PriceAtPurchase,
+    DateTime? StartDate,
+    DateTime? EndDate
+);
+
 
 }
 
-  
