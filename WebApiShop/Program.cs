@@ -23,6 +23,10 @@ builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IPropertyInquiryService, PropertyInquiryService>();
+builder.Services.AddScoped<IPropertyInquiryRepository, PropertyInquiryRepository>();
+builder.Services.AddScoped<IAdminInquiryRepository, AdminInquiryRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Host.UseNLog();
 builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-TB3DT9H; Database = RealEstateDB; Trusted_Connection = True; TrustServerCertificate = True;"));

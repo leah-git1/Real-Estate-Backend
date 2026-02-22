@@ -4,26 +4,26 @@ GO
 USE RealEstateDB_;
 GO
 
--- ибмъ ощъощйн
+-- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 CREATE TABLE Users (
     UserID INT PRIMARY KEY IDENTITY(1,1),
     FullName NVARCHAR(100) NOT NULL,
     Email NVARCHAR(100) NOT NULL,
     Password NVARCHAR(255) NOT NULL,
     Phone NVARCHAR(20) NULL,
-    Address NVARCHAR(MAX) NULL, -- десу мфй Entity
+    Address NVARCHAR(MAX) NULL, -- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ Entity
     IsAdmin BIT NULL DEFAULT 0,
     CONSTRAINT UQ_Users_Email UNIQUE (Email)
 );
 
--- ибмъ чивешйеъ
+-- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 CREATE TABLE Categories (
     CategoryID INT PRIMARY KEY IDENTITY(1,1),
     CategoryName NVARCHAR(50) NOT NULL,
     Description NVARCHAR(500) NULL
 );
 
--- ибмъ оецшйн
+-- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 CREATE TABLE Products (
     ProductID INT PRIMARY KEY IDENTITY(1,1),
     Title NVARCHAR(200) NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE Products (
         REFERENCES Users(UserID)
 );
 
--- ибмъ джореъ
+-- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 CREATE TABLE Orders (
     OrderID INT PRIMARY KEY IDENTITY(1,1),
     UserID INT NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE Orders (
         REFERENCES Users(UserID)
 );
 
--- ибмъ фший джорд
+-- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 CREATE TABLE OrderItems (
     OrderItemID INT PRIMARY KEY IDENTITY(1,1),
     OrderID INT NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE OrderItems (
         REFERENCES Products(ProductID)
 );
 
--- ибмъ ъоереъ ресфеъ
+-- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 CREATE TABLE ProductImages (
     ImageID INT PRIMARY KEY IDENTITY(1,1),
     ProductID INT NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE ProductImages (
         REFERENCES Products(ProductID) ON DELETE CASCADE
 );
 
--- ибмъ мевйн
+-- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 CREATE TABLE Ratings (
     RatingId INT PRIMARY KEY IDENTITY(1,1),
     Host NVARCHAR(255) NULL,
@@ -91,5 +91,41 @@ CREATE TABLE Ratings (
     RecordDate DATETIME NULL DEFAULT GETDATE(),
     Referer NVARCHAR(500) NULL,
     UserAgent NVARCHAR(1000) NULL
+);
+
+-- Property Inquiries Table
+CREATE TABLE PropertyInquiries (
+    InquiryID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL,
+    UserID INT NOT NULL,
+    OwnerID INT NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    Phone NVARCHAR(20) NOT NULL,
+    Email NVARCHAR(100) NOT NULL,
+    Message NVARCHAR(MAX) NULL,
+    CreatedAt DATETIME NULL DEFAULT GETDATE(),
+    Status NVARCHAR(50) NULL DEFAULT 'New',
+
+    CONSTRAINT FK_PropertyInquiry_Product FOREIGN KEY (ProductID) 
+        REFERENCES Products(ProductID),
+    CONSTRAINT FK_PropertyInquiry_User FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID),
+    CONSTRAINT FK_PropertyInquiry_Owner FOREIGN KEY (OwnerID) 
+        REFERENCES Users(UserID)
+);
+
+CREATE TABLE AdminInquiries (
+    InquiryID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(100) NOT NULL,
+    Phone NVARCHAR(20) NOT NULL,
+    Subject NVARCHAR(200) NOT NULL,
+    Message NVARCHAR(MAX) NULL,
+    CreatedAt DATETIME NULL DEFAULT GETDATE(),
+    Status NVARCHAR(50) NULL DEFAULT 'New',
+
+    CONSTRAINT FK_AdminInquiry_User FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID)
 );
 GO

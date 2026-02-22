@@ -19,6 +19,8 @@ public partial class ShopContext : DbContext
     public virtual DbSet<OrderItem> OrderItems { get; set; }
     public virtual DbSet<Product> Products { get; set; }
     public virtual DbSet<ProductImage> ProductImages { get; set; }
+    public virtual DbSet<PropertyInquiry> PropertyInquiries { get; set; }
+    public virtual DbSet<AdminInquiry> AdminInquiries { get; set; }
     public virtual DbSet<Rating> Ratings { get; set; }
     public virtual DbSet<User> Users { get; set; }
 
@@ -153,6 +155,96 @@ public partial class ShopContext : DbContext
                 .WithMany(p => p.ProductImages)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("FK_ProductImages_Products");
+        });
+
+        modelBuilder.Entity<PropertyInquiry>(entity =>
+        {
+            entity.HasKey(e => e.InquiryId).HasName("PK__Property__5D5E0C04");
+
+            entity.Property(e => e.InquiryId).HasColumnName("InquiryID");
+
+            entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+
+            entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Phone)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValue("New");
+
+            entity.HasOne(d => d.Product)
+                .WithMany()
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PropertyInquiry_Product");
+
+            entity.HasOne(d => d.User)
+                .WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PropertyInquiry_User");
+
+            entity.HasOne(d => d.Owner)
+                .WithMany()
+                .HasForeignKey(d => d.OwnerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PropertyInquiry_Owner");
+        });
+
+        modelBuilder.Entity<AdminInquiry>(entity =>
+        {
+            entity.HasKey(e => e.InquiryId).HasName("PK__AdminInq__5D5E0C05");
+
+            entity.Property(e => e.InquiryId).HasColumnName("InquiryID");
+
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Phone)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(e => e.Subject)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValue("New");
+
+            entity.HasOne(d => d.User)
+                .WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_AdminInquiry_User");
         });
 
         modelBuilder.Entity<Rating>(entity =>

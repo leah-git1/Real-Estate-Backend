@@ -83,5 +83,74 @@ namespace WebApiShop.Controllers
             _logger.LogInformation("Order with ID {id} was deleted by admin", id);
             return NoContent();
         }
+
+        [HttpGet("inquiries")]
+        public async Task<ActionResult<List<AdminInquiryDTO>>> GetAllAdminInquiries()
+        {
+            _logger.LogInformation("Getting all admin inquiries");
+            List<AdminInquiryDTO> inquiries = await _adminService.GetAllAdminInquiries();
+            return Ok(inquiries);
+        }
+
+        [HttpGet("inquiry/{id}")]
+        public async Task<ActionResult<AdminInquiryDTO>> GetAdminInquiryById(int id)
+        {
+            _logger.LogInformation("Getting admin inquiry with ID: {Id}", id);
+            AdminInquiryDTO inquiry = await _adminService.GetAdminInquiryById(id);
+            if (inquiry == null)
+            {
+                _logger.LogWarning("Admin inquiry with ID {Id} was not found", id);
+                return NotFound();
+            }
+            return Ok(inquiry);
+        }
+
+        [HttpPost("inquiry")]
+        public async Task<ActionResult<AdminInquiryDTO>> AddAdminInquiry(AdminInquiryCreateDTO createDto)
+        {
+            try
+            {
+                _logger.LogInformation("Adding new admin inquiry from: {Email}", createDto.Email);
+                AdminInquiryDTO inquiry = await _adminService.AddAdminInquiry(createDto);
+                _logger.LogInformation("Admin inquiry added successfully with ID: {Id}", inquiry.InquiryId);
+                return CreatedAtAction(nameof(GetAdminInquiryById), new { id = inquiry.InquiryId }, inquiry);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding admin inquiry. Inner: {Inner}", ex.InnerException?.Message);
+                return BadRequest(new { Message = "שגיאה ביצירת הפנייה", Details = ex.Message, Inner = ex.InnerException?.Message });
+            }
+        }
+
+        [HttpPut("inquiry/{id}/status")]
+        public async Task<ActionResult<AdminInquiryDTO>> UpdateAdminInquiryStatus(int id, AdminInquiryStatusUpdateDTO statusDto)
+        {
+            _logger.LogInformation("Updating status for admin inquiry ID: {Id}", id);
+            AdminInquiryDTO updatedInquiry = await _adminService.UpdateAdminInquiryStatus(id, statusDto);
+            if (updatedInquiry == null)
+            {
+                _logger.LogWarning("Update failed: Admin inquiry with ID {Id} not found", id);
+                return NotFound();
+            }
+            _logger.LogInformation("Admin inquiry with ID {Id} status updated successfully", id);
+            return Ok(updatedInquiry);
+        }
+
+        [HttpDelete("inquiry/{id}")]
+        public async Task<ActionResult> DeleteAdminInquiry(int id)
+        {
+            try
+            {
+                _logger.LogInformation("Deleting admin inquiry with ID: {Id}", id);
+                await _adminService.DeleteAdminInquiry(id);
+                _logger.LogInformation("Admin inquiry with ID {Id} deleted successfully", id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while deleting admin inquiry with ID: {Id}", id);
+                return BadRequest(new { Message = "שגיאה במחיקת הפנייה", Details = ex.Message });
+            }
+        }
     }
 }

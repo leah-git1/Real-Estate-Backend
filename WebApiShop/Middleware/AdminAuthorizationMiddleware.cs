@@ -13,6 +13,14 @@ namespace WebApiShop.Middleware
         {
             if (context.Request.Path.StartsWithSegments("/api/admin"))
             {
+                // Allow POST to /api/admin/inquiry for all users
+                if (context.Request.Path.Value.Equals("/api/admin/inquiry", StringComparison.OrdinalIgnoreCase) 
+                    && context.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
+                {
+                    await _next(context);
+                    return;
+                }
+
                 var isAdminHeader = context.Request.Headers["IsAdmin"].FirstOrDefault();
                 if (isAdminHeader != "true")
                 {
