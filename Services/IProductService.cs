@@ -11,5 +11,6 @@ namespace Services
         Task<PageResponseDTO<ProductSummaryDTO>> GetProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip);
         Task<List<ProductSummaryDTO>> GetProductsByOwnerId(int ownerId);
         Task<ProductDetailsDTO> UpdateProduct(int id, ProductUpdateDTO productUpdateDto);
+        Task<List<ProductSummaryDTO>> SearchProducts(string query);
     }
 }

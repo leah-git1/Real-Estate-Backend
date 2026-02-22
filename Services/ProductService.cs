@@ -142,5 +142,12 @@ namespace Services
             return true;
         }
 
+        public async Task<List<ProductSummaryDTO>> SearchProducts(string query)
+        {
+            List<Product> products = await _iProductRepository.SearchProducts(query);
+            products = products.Where(p => p.IsAvailable == true).ToList();
+            return _mapper.Map<List<Product>, List<ProductSummaryDTO>>(products);
+        }
+
     }
 }

@@ -99,5 +99,15 @@ namespace WebApiShop.Controllers
             bool isAvailable = await _iProductService.CheckAvailability(productId, start, end);
             return Ok(isAvailable);
         }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<List<ProductSummaryDTO>>> SearchProducts([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return Ok(new List<ProductSummaryDTO>());
+            
+            List<ProductSummaryDTO> results = await _iProductService.SearchProducts(query);
+            return Ok(results);
+        }
     }
 }

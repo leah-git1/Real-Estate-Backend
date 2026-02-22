@@ -160,5 +160,17 @@ namespace Repository
                 .Include(p => p.ProductImages)
                 .ToListAsync();
         }
+
+        public async Task<List<Product>> SearchProducts(string query)
+        {
+            return await _ShopContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductImages)
+                .Where(p => p.IsAvailable == true && 
+                           (p.Title.Contains(query) || p.City.Contains(query)))
+                .OrderByDescending(p => p.CreatedDate)
+                .Take(10)
+                .ToListAsync();
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace Repository
         Task<(List<Product>, int total)> GetProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position = 1, int skip = 10);
         Task<List<Product>> GetAllProductsForAdmin();
         Task<List<Product>> GetProductsByOwnerId(int ownerId);
-       
         Task<Product> UpdateProduct(int id, Product productToUpdate);
+        Task<List<Product>> SearchProducts(string query);
     }
 }
