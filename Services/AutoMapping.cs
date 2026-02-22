@@ -15,7 +15,9 @@ namespace Services
             CreateMap<User,UserUpdateDTO>();
 
             // ================= Products =================
-            CreateMap<Product, ProductSummaryDTO>();
+            CreateMap<Product, ProductSummaryDTO>()
+                .ForMember(dest => dest.TransactionType, opt => opt.MapFrom(src => src.TransactionType))
+                .ForMember(dest => dest.CategoryCategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : null));
             CreateMap<Product, ProductDetailsDTO>();
             CreateMap<ProductDetailsDTO, Product>();
             CreateMap<ProductCreateDTO, Product>();

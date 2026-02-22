@@ -35,7 +35,10 @@ namespace Repository
             //    .OrderByDescending(p => p.CreatedDate)
             //    .AsNoTracking()
             //    .ToListAsync();
-            var query = _ShopContext.Products.Include(p => p.ProductImages).Where(product =>
+            var query = _ShopContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductImages)
+                .Where(product =>
                 ((minPrice == null) ? (true) : (product.Price >= minPrice))
                 && ((maxPrice == null) ? (true) : (product.Price <= maxPrice))
                 && ((categoryIds == null || categoryIds.Length == 0) ? (true) : (categoryIds.Contains(product.CategoryId)))
@@ -48,7 +51,7 @@ namespace Repository
             Console.WriteLine(query.ToQueryString());
 
             List<Product> products = await query.Skip(((position - 1) * skip))
-            .Take(skip).Include(product => product.Category).ToListAsync();
+            .Take(skip).ToListAsync();
 
             var total = await query.CountAsync();
             return (products, total);
