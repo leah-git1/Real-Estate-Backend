@@ -31,6 +31,13 @@ namespace Services
             response.Item1 = response.Item1.Where(p => p.IsAvailable == true).ToList();
 
             List<ProductSummaryDTO> data = _mapper.Map<List<Product>, List<ProductSummaryDTO>>(response.Item1);
+            
+            // Debug log
+            if (data.Count > 0)
+            {
+                Console.WriteLine($"First product: {data[0].Title}, TransactionType: {data[0].TransactionType}");
+                Console.WriteLine($"Source product TransactionType: {response.Item1[0].TransactionType}");
+            }
             PageResponseDTO<ProductSummaryDTO> pageResponse = new();
             pageResponse.Data = data;
             pageResponse.TotalItems = response.Item2; 
@@ -147,6 +154,13 @@ namespace Services
             List<Product> products = await _iProductRepository.SearchProducts(query);
             products = products.Where(p => p.IsAvailable == true).ToList();
             return _mapper.Map<List<Product>, List<ProductSummaryDTO>>(products);
+        }
+
+        public async Task<List<ProductSummaryDTO>> GetFeaturedProducts(int count = 5)
+        {
+            List<Product> allProducts = await _iProductRepository.GetFeaturedProducts(count);
+            List<ProductSummaryDTO> featuredProducts = _mapper.Map<List<Product>, List<ProductSummaryDTO>>(allProducts);
+            return featuredProducts;
         }
 
     }

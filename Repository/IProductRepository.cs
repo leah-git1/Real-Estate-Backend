@@ -12,5 +12,6 @@ namespace Repository
         Task<List<Product>> GetProductsByOwnerId(int ownerId);
         Task<Product> UpdateProduct(int id, Product productToUpdate);
         Task<List<Product>> SearchProducts(string query);
+        Task<List<Product>> GetFeaturedProducts(int count = 5);
     }
 }

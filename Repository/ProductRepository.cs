@@ -175,5 +175,16 @@ namespace Repository
                 .Take(10)
                 .ToListAsync();
         }
+
+        public async Task<List<Product>> GetFeaturedProducts(int count = 5)
+        {
+            return await _ShopContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductImages)
+                .Where(p => p.IsAvailable == true)
+                .OrderByDescending(p => p.CreatedDate)
+                .Take(count)
+                .ToListAsync();
+        }
     }
 }

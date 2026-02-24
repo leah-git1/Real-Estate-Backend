@@ -109,5 +109,21 @@ namespace WebApiShop.Controllers
             List<ProductSummaryDTO> results = await _iProductService.SearchProducts(query);
             return Ok(results);
         }
+
+        [HttpGet("featured")]
+        public async Task<ActionResult<List<ProductSummaryDTO>>> GetFeaturedProducts([FromQuery] int count = 5)
+        {
+            try
+            {
+                List<ProductSummaryDTO> featuredProducts = await _iProductService.GetFeaturedProducts(count);
+                _logger.LogInformation("Retrieved {Count} featured products", count);
+                return Ok(featuredProducts);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving featured products: {Message}", ex.Message);
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
     }
 }
