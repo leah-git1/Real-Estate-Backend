@@ -29,7 +29,7 @@ builder.Services.AddScoped<IAdminInquiryRepository, AdminInquiryRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Host.UseNLog();
-builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-TB3DT9H; Database = RealEstateDB_; Trusted_Connection = True; TrustServerCertificate = True;"));
+builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-1VUANBN; Database = RealEstateDB; Trusted_Connection = True; TrustServerCertificate = True;"));
 //builder.Configuration.GetConnectionString("DefaultConnection")
 // Add services to the container.
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

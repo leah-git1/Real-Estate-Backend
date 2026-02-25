@@ -65,14 +65,36 @@ namespace Services
 
         public async Task<UserProfileDTO> UpdateUser(UserUpdateDTO userToUpdate, int id)
         {
-            if (userToUpdate.Password != null)
+            // אם מנסים לשנות סיסמה
+            if (!string.IsNullOrWhiteSpace(userToUpdate.Password))
             {
+                // בדיקה שהסיסמה הישנה נשלחה
+                if (string.IsNullOrWhiteSpace(userToUpdate.OldPassword))
+                {
+                    throw new Exception("חובה להזין את הסיסמה הנוכחית");
+                }
+                
+                // בדיקה שהסיסמה הישנה נכונה
+                User existingUser = await _iUsersRepository.GetUserById(id);
+                if (existingUser == null)
+                {
+                    throw new Exception("משתמש לא נמצא");
+                }
+                
+                // בדיקה ישירה שהסיסמה הישנה תואמת לסיסמה הנוכחית בדאטאבייס
+                if (existingUser.Password != userToUpdate.OldPassword)
+                {
+                    throw new Exception("הסיסמה הנוכחית שגויה");
+                }
+                
+                // בדיקת חוזק סיסמה חדשה
                 var checkPassword = _iPasswordService.checkStrengthPassword(userToUpdate.Password);
                 if (checkPassword.strength < 2)
                 {
-                    return null;
+                    throw new Exception("הסיסמה החדשה חלשה מדי. עליה להכיל לפחות 8 תווים ושילוב של אותיות ומספרים");
                 }
             }
+            
             User user = _mapper.Map<UserUpdateDTO, User>(userToUpdate);
             user.UserId = id;
             user = await _iUsersRepository.UpdateUser(user, id);

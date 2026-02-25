@@ -46,19 +46,19 @@ namespace Repository
             if (existingUser == null)
                 return null;
 
-            if (userToUpdate.FullName != null)
+            if (!string.IsNullOrWhiteSpace(userToUpdate.FullName))
                 existingUser.FullName = userToUpdate.FullName;
 
-            if (userToUpdate.Email != null)
+            if (!string.IsNullOrWhiteSpace(userToUpdate.Email))
                 existingUser.Email = userToUpdate.Email;
 
-            if (userToUpdate.Password != null)
+            if (!string.IsNullOrWhiteSpace(userToUpdate.Password))
                 existingUser.Password = userToUpdate.Password;
 
-            if (userToUpdate.Phone != null)
+            if (!string.IsNullOrWhiteSpace(userToUpdate.Phone))
                 existingUser.Phone = userToUpdate.Phone;
 
-            if (userToUpdate.Address != null)
+            if (!string.IsNullOrWhiteSpace(userToUpdate.Address))
                 existingUser.Address = userToUpdate.Address;
 
             await _ShopContext.SaveChangesAsync();

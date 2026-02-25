@@ -76,14 +76,22 @@ namespace WebApiShop.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UserUpdateDTO userToUpdate)
         {
-            UserProfileDTO user = await _iUsersServices.UpdateUser(userToUpdate, id);
-            if (user == null)
+            try
             {
-                _logger.LogWarning("Update failed: User with ID {id} not found or invalid data", id);
-                return BadRequest();
+                UserProfileDTO user = await _iUsersServices.UpdateUser(userToUpdate, id);
+                if (user == null)
+                {
+                    _logger.LogWarning("Update failed: User with ID {id} not found or invalid data", id);
+                    return BadRequest(new { message = "משתמש לא נמצא" });
+                }
+                _logger.LogInformation("User with ID {id} updated successfully", id);
+                return Ok(user);
             }
-            _logger.LogInformation("User with ID {id} updated successfully", id);
-            return Ok(user);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Update failed for user ID: {id}", id);
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]

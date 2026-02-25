@@ -11,6 +11,7 @@ namespace DTOs
         string? FullName,
         string? Email,
         string? Password,
+        string? OldPassword,
         string? Phone,
         string? Address
     );
