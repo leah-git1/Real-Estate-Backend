@@ -18,7 +18,7 @@ namespace Repository
             this._ShopContext = ShopContext;
         }
 
-        public async Task<(List<Product>, int total)> GetProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position = 1, int skip = 10)
+        public async Task<(List<Product>, int total)> GetProducts(int?[] categoryIds,string? title, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position = 1, int skip = 10)
         {
             //return await _ShopContext.Products
             //    .Include(p => p.Category)
@@ -45,6 +45,7 @@ namespace Repository
                 && ((rooms == null) ? (true) : (product.Rooms == rooms))
                 && ((beds == null) ? (true) : (product.Beds == beds))
                 && ((city == null) ? (true) : (product.City.Contains(city)))
+                && ((title == null) ? (true) : product.Title.Contains(title))
                 && (product.IsAvailable == true)
             ).OrderBy(product => product.Price);
 

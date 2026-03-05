@@ -61,7 +61,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserProfileDTO>> LoginUser([FromBody] UserLoginDTO userToLog)
+        public async Task<ActionResult<UserProfileDTO>> LoginUser(UserLoginDTO userToLog)
         {
             UserProfileDTO user = await _iUsersServices.LoginUser(userToLog);
             if (user == null)
@@ -74,7 +74,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateUser(int id, [FromBody] UserUpdateDTO userToUpdate)
+        public async Task<ActionResult> UpdateUser(int id, UserUpdateDTO userToUpdate)
         {
             try
             {

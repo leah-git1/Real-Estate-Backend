@@ -22,9 +22,20 @@ namespace WebApiShop.Controllers
 
         // GET: api/<ProductController>
         [HttpGet]
-        public async Task<ActionResult<PageResponseDTO<ProductSummaryDTO>>> GetProducts([FromQuery] int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip)
+        public async Task<ActionResult<PageResponseDTO<ProductSummaryDTO>>> GetProducts([FromQuery] int?[] categoryIds, string? title, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip)
         {
-            return await _iProductService.GetProducts(categoryIds, city, minPrice, maxPrice, rooms, beds, position, skip);
+            try
+            {
+                PageResponseDTO<ProductSummaryDTO> result = await _iProductService.GetProducts(categoryIds,title, city, minPrice, maxPrice, rooms, beds, position, skip);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching products. CategoryIds: {CategoryIds}, City: {City}, MinPrice: {MinPrice}, MaxPrice: {MaxPrice}, Rooms: {Rooms}, Beds: {Beds}, Position: {Position}, Skip: {Skip}",
+                    categoryIds, city, minPrice, maxPrice, rooms, beds, position, skip);
+
+                return BadRequest(new { Message = "An error occurred while fetching products.", Details = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]

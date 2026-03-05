@@ -8,7 +8,7 @@ namespace Services
         Task<bool> CheckAvailability(int productId, DateTime? start, DateTime? end);
         Task<bool> DeleteProduct(int id);
         Task<ProductDetailsDTO> GetProductById(int id);
-        Task<PageResponseDTO<ProductSummaryDTO>> GetProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip);
+        Task<PageResponseDTO<ProductSummaryDTO>> GetProducts(int?[] categoryIds, string? title, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip);
         Task<List<ProductSummaryDTO>> GetProductsByOwnerId(int ownerId);
         Task<ProductDetailsDTO> UpdateProduct(int id, ProductUpdateDTO productUpdateDto);
         Task<List<ProductSummaryDTO>> SearchProducts(string query);

@@ -23,11 +23,11 @@ namespace Services
             this._mapper = mapper;
         }
 
-        public async Task<PageResponseDTO<ProductSummaryDTO>> GetProducts(int?[] categoryIds, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip)
+        public async Task<PageResponseDTO<ProductSummaryDTO>> GetProducts(int?[] categoryIds, string? title, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip)
         {
             if (skip <= 0) skip = 10;
             if (position <= 0) position = 1;
-            (List<Product>, int) response = await _iProductRepository.GetProducts(categoryIds, city, minPrice, maxPrice, rooms, beds, position, skip);
+            (List<Product>, int) response = await _iProductRepository.GetProducts(categoryIds, title, city, minPrice, maxPrice, rooms, beds, position, skip);
             response.Item1 = response.Item1.Where(p => p.IsAvailable == true).ToList();
 
             List<ProductSummaryDTO> data = _mapper.Map<List<Product>, List<ProductSummaryDTO>>(response.Item1);
