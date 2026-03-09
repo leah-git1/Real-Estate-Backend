@@ -13,20 +13,32 @@ namespace WebApiShop.Controllers
     {
         private readonly IProductService _iProductService;
         private readonly ILogger<ProductController> _logger;
+        private readonly ICategoriesServies _iCategoriesServies;
 
-        public ProductController(IProductService iProductService, ILogger<ProductController> logger)
+        public ProductController(IProductService iProductService, ILogger<ProductController> logger, ICategoriesServies iCategoriesServies)
         {
             _iProductService = iProductService;
             _logger = logger;
+            _iCategoriesServies = iCategoriesServies;
         }
 
         // GET: api/<ProductController>
         [HttpGet]
         public async Task<ActionResult<PageResponseDTO<ProductSummaryDTO>>> GetProducts([FromQuery] int?[] categoryIds, string? title, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position, int skip)
         {
+            foreach (int id in categoryIds)
+            {
+                CategoryDTO category = await _iCategoriesServies.GetCategoryById(id);
+                if (category == null)
+                {
+                    _logger.LogWarning("Category with ID {Id} was not found", id);
+                    return BadRequest("Category with ID was not found");
+                }
+            }
             try
             {
-                PageResponseDTO<ProductSummaryDTO> result = await _iProductService.GetProducts(categoryIds,title, city, minPrice, maxPrice, rooms, beds, position, skip);
+                PageResponseDTO<ProductSummaryDTO> result = await _iProductService.GetProducts(categoryIds, title, city, minPrice, maxPrice, rooms, beds, position, skip);
+                _logger.LogInformation("Successfully fetched products. ");
                 return Ok(result);
             }
             catch (Exception ex)
@@ -56,7 +68,7 @@ namespace WebApiShop.Controllers
             try
             {
                 ProductDetailsDTO newProduct = await _iProductService.AddProduct(productCreateDto);
-                if(newProduct==null)
+                if (newProduct == null)
                 {
                     _logger.LogWarning("Failed to add product with name {Name}", productCreateDto.Title);
                     return BadRequest();
@@ -116,7 +128,7 @@ namespace WebApiShop.Controllers
         {
             if (string.IsNullOrWhiteSpace(query))
                 return Ok(new List<ProductSummaryDTO>());
-            
+
             List<ProductSummaryDTO> results = await _iProductService.SearchProducts(query);
             return Ok(results);
         }

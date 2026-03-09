@@ -30,6 +30,7 @@ namespace WebApiShop.Controllers
                 _logger.LogWarning("Categorys were not found");
                 return new List<CategoryDTO>();
             }
+            _logger.LogInformation("Categorys were found");
             return categories;
         }
 

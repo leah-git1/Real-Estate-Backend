@@ -44,9 +44,10 @@ namespace Services
             }
 
             List<User> allUsers = await _iUsersRepository.GetAllUsers();
-            if (allUsers.Any(u => u.Email == userToRegister.Email))
+            foreach (var item in allUsers)
             {
-                throw new Exception("כתובת האימייל כבר קיימת במערכת.");
+                if(item.Email == userToRegister.Email)
+                    throw new Exception("כתובת האימייל כבר קיימת במערכת.");
             }
 
             User user = _mapper.Map<UserRegisterDTO, User>(userToRegister);
@@ -56,8 +57,7 @@ namespace Services
 
         public async Task<UserProfileDTO> LoginUser(UserLoginDTO userToLog)
         {
-
-            User user = await _iUsersRepository.LoginUser(userToLog);
+            User user = await _iUsersRepository.LoginUser(userToLog.Email, userToLog.Password);
             if (user == null)
                 return null;
             return _mapper.Map<User, UserProfileDTO>(user);
@@ -65,19 +65,19 @@ namespace Services
 
         public async Task<UserProfileDTO> UpdateUser(UserUpdateDTO userToUpdate, int id)
         {
-            if (!string.IsNullOrWhiteSpace(userToUpdate.Password))
+            User existingUser = await _iUsersRepository.GetUserById(id);
+            if (existingUser == null)
             {
-                if (string.IsNullOrWhiteSpace(userToUpdate.OldPassword))
+                throw new Exception("משתמש לא נמצא");
+            }
+
+            if (userToUpdate.Password != null && userToUpdate.Password != "")
+            {
+                if (userToUpdate.OldPassword == null|| userToUpdate.OldPassword == "")
                 {
                     throw new Exception("חובה להזין את הסיסמה הנוכחית");
                 }
-                
-                User existingUser = await _iUsersRepository.GetUserById(id);
-                if (existingUser == null)
-                {
-                    throw new Exception("משתמש לא נמצא");
-                }
-                
+               
                 if (existingUser.Password != userToUpdate.OldPassword)
                 {
                     throw new Exception("הסיסמה הנוכחית שגויה");
@@ -91,9 +91,10 @@ namespace Services
             }
 
             List<User> allUsers = await _iUsersRepository.GetAllUsers();
-            if (allUsers.Any(u => u.Email == userToUpdate.Email))
+            foreach (var item in allUsers)
             {
-                throw new Exception("כתובת האימייל כבר קיימת במערכת.");
+                if (item.Email == userToUpdate.Email && item.UserId != id)
+                    throw new Exception("כתובת האימייל כבר קיימת במערכת.");
             }
 
             User user = _mapper.Map<UserUpdateDTO, User>(userToUpdate);

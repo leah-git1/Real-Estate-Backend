@@ -32,33 +32,32 @@ namespace Repository
             return user;
         }
 
-        public async Task<User> LoginUser(UserLoginDTO userToLog)
+        public async Task<User> LoginUser(string email, string password)
         {
             return await _ShopContext.Users.FirstOrDefaultAsync(x =>
-                x.Email == userToLog.Email && x.Password == userToLog.Password);
+                x.Email == email && x.Password == password);
         }
 
         public async Task<User> UpdateUser(User userToUpdate, int id)
         {
-            User existingUser = await _ShopContext.Users
-                .FirstOrDefaultAsync(u => u.UserId == id);
+            User existingUser = await _ShopContext.Users.FirstOrDefaultAsync(u => u.UserId == id);
 
             if (existingUser == null)
                 return null;
 
-            if (!string.IsNullOrWhiteSpace(userToUpdate.FullName))
+            if (userToUpdate.FullName != null && userToUpdate.FullName != "")
                 existingUser.FullName = userToUpdate.FullName;
 
-            if (!string.IsNullOrWhiteSpace(userToUpdate.Email))
+            if (userToUpdate.Email != null && userToUpdate.Email != "")
                 existingUser.Email = userToUpdate.Email;
 
-            if (!string.IsNullOrWhiteSpace(userToUpdate.Password))
+            if (userToUpdate.Password != null && userToUpdate.Password != "")
                 existingUser.Password = userToUpdate.Password;
 
-            if (!string.IsNullOrWhiteSpace(userToUpdate.Phone))
+            if (userToUpdate.Phone != null && userToUpdate.Phone != "")
                 existingUser.Phone = userToUpdate.Phone;
 
-            if (!string.IsNullOrWhiteSpace(userToUpdate.Address))
+            if (userToUpdate.Address != null && userToUpdate.Address != "")
                 existingUser.Address = userToUpdate.Address;
 
             await _ShopContext.SaveChangesAsync();

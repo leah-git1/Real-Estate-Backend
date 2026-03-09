@@ -67,7 +67,7 @@ namespace WebApiShop.Controllers
             if (user == null)
             {
                 _logger.LogInformation("Login failed for email: {Email}", userToLog.Email);
-                return BadRequest();
+                return BadRequest("Login failed for email: {Email}");
             }
             _logger.LogInformation("User login successfully: Name: {FullName}, Email: {Email}", user.FullName, userToLog.Email);
             return Ok(user);
@@ -82,7 +82,7 @@ namespace WebApiShop.Controllers
                 if (user == null)
                 {
                     _logger.LogWarning("Update failed: User with ID {id} not found or invalid data", id);
-                    return BadRequest(new { message = "משתמש לא נמצא" });
+                    return BadRequest(new { message = "Update failed" });
                 }
                 _logger.LogInformation("User with ID {id} updated successfully", id);
                 return Ok(user);

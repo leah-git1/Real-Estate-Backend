@@ -32,12 +32,11 @@ namespace Services
 
             List<ProductSummaryDTO> data = _mapper.Map<List<Product>, List<ProductSummaryDTO>>(response.Item1);
             
-            // Debug log
-            if (data.Count > 0)
-            {
-                Console.WriteLine($"First product: {data[0].Title}, TransactionType: {data[0].TransactionType}");
-                Console.WriteLine($"Source product TransactionType: {response.Item1[0].TransactionType}");
-            }
+            //if (data.Count > 0)
+            //{
+            //    Console.WriteLine($"First product: {data[0].Title}, TransactionType: {data[0].TransactionType}");
+            //    Console.WriteLine($"Source product TransactionType: {response.Item1[0].TransactionType}");
+            //}
             PageResponseDTO<ProductSummaryDTO> pageResponse = new();
             pageResponse.Data = data;
             pageResponse.TotalItems = response.Item2; 

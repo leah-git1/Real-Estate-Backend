@@ -8,7 +8,7 @@ namespace Repository
         Task DeleteUser(int id);
         Task<List<User>> GetAllUsers();
         Task<User> GetUserById(int id);
-        Task<User> LoginUser(UserLoginDTO userToLog);
+        Task<User> LoginUser(string email, string password);
         Task<User> RegisterUser(User user);
         Task<User> UpdateUser(User userToUpdate, int id);
     }

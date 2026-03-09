@@ -20,22 +20,7 @@ namespace Repository
 
         public async Task<(List<Product>, int total)> GetProducts(int?[] categoryIds,string? title, string? city, decimal? minPrice, decimal? maxPrice, int? rooms, int? beds, int position = 1, int skip = 10)
         {
-            //return await _ShopContext.Products
-            //    .Include(p => p.Category)
-            //    .Include(p => p.ProductImages)
-            //    .Where(p =>
-            //        (p.IsAvailable == true) &&
-            //        (categoryIds == null || categoryIds.Length == 0 || categoryIds.Contains(p.CategoryId)) &&
-            //        (city == null || p.City.Contains(city)) &&
-            //        (minPrice == null || p.Price >= minPrice) &&
-            //        (maxPrice == null || p.Price <= maxPrice) &&
-            //        (rooms == null || p.Rooms == rooms) &&
-            //        (beds == null || p.Beds == beds)
-            //    )
-            //    .OrderByDescending(p => p.CreatedDate)
-            //    .AsNoTracking()
-            //    .ToListAsync();
-            var query = _ShopContext.Products
+           var query = _ShopContext.Products
                 .Include(p => p.Category)
                 .Include(p => p.ProductImages)
                 .Where(product =>
