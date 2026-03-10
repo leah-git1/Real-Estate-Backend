@@ -51,7 +51,6 @@ namespace Services
             // ================= Order Items =================
             CreateMap<OrderItem, OrderItemDTO>();
             CreateMap<OrderItemDTO, OrderItem>();
-            CreateMap<OrderItem, OrderItemViewDTO>();
         }
     }
 }

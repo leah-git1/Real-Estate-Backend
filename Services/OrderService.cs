@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DTOs;
 using Entities;
 using Repository;
@@ -15,13 +15,15 @@ namespace Services
         private readonly IOrderRepository _iOrderRepository;
         private readonly IProductRepository _iProductRepository;
         private readonly IProductService _iProductService;
+        private readonly IUsersRepository _iUsersRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository iOrderRepository, IProductRepository iProductRepository, IProductService iProductService, IMapper mapper)
+        public OrderService(IOrderRepository iOrderRepository, IProductRepository iProductRepository, IProductService iProductService, IUsersRepository iUsersRepository, IMapper mapper)
         {
             this._iOrderRepository = iOrderRepository;
             this._iProductRepository = iProductRepository;
             this._iProductService = iProductService;
+            this._iUsersRepository = iUsersRepository;
             this._mapper = mapper;
         }
 
@@ -46,37 +48,58 @@ namespace Services
 
         public async Task<OrderDTO> AddOrder(OrderCreateDTO createOrder)
         {
-            foreach (OrderItemDTO item in createOrder.OrderItems)
+            User user = await _iUsersRepository.GetUserById(createOrder.UserId);
+            if (user == null)
+                throw new Exception("UserNotFound");
+
+            Order order = new Order
             {
+                UserId = createOrder.UserId,
+                OrderItems = new List<OrderItem>()
+            };
+
+            decimal calculatedTotal = 0;
+
+            foreach (OrderItemCreateDTO item in createOrder.OrderItems)
+            {
+                Product product = await _iProductRepository.GetProductById(item.ProductId);
+                if (product == null)
+                    throw new Exception("ProductNotFound");
+
+                if (product.TransactionType == "Sale" || product.TransactionType == "מכירה")
+                    throw new Exception("Sale items are not available for online booking");
+
                 if (!item.StartDate.HasValue || !item.EndDate.HasValue)
-                    continue;
+                    throw new Exception("InvalidDates");
+
+                if (item.StartDate < DateTime.UtcNow.Date)
+                    throw new Exception("StartDateInPast");
+
+                if (item.EndDate <= item.StartDate)
+                    throw new Exception("EndDateBeforeStart");
+
                 bool isAvailable = await _iProductService
                     .CheckAvailability(item.ProductId, item.StartDate, item.EndDate);
 
                 if (!isAvailable)
                     throw new Exception("ProductUnavailable");
-            }
 
-            Order order = _mapper.Map<Order>(createOrder);
+                int days = (int)(item.EndDate.Value - item.StartDate.Value).TotalDays;
+                decimal itemTotal = days * product.Price;
+                calculatedTotal += itemTotal;
 
-            decimal total = 0;
-
-            foreach (OrderItem orderItem in order.OrderItems)
-            {
-                total += orderItem.PriceAtPurchase;
-
-                Product p = await _iProductRepository
-                    .GetProductById(orderItem.ProductId);
-
-
-                if (p.TransactionType == "Sale")
+                OrderItem newItem = new OrderItem
                 {
-                    p.IsAvailable = false;
-                    await _iProductRepository.UpdateProduct(p.ProductId, p);
-                }
+                    ProductId = item.ProductId,
+                    PriceAtPurchase = product.Price,
+                    StartDate = item.StartDate,
+                    EndDate = item.EndDate
+                };
+
+                order.OrderItems.Add(newItem);
             }
 
-            order.TotalAmount = total;
+            order.TotalAmount = calculatedTotal;
             order.OrderDate = DateTime.UtcNow;
 
             Order orderTbl = await _iOrderRepository.AddOrder(order);

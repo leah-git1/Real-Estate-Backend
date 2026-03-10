@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace WebApiShop
@@ -9,7 +10,7 @@ namespace WebApiShop
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
+        private readonly ILogger<ErrorHandlingMiddleware> _logger;
 
         public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
         {
@@ -25,8 +26,20 @@ namespace WebApiShop
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Unhandled exception occurred: {Message}", ex.Message);
+
+                httpContext.Response.ContentType = "application/json";
                 httpContext.Response.StatusCode = 500;
-                _logger.LogError(ex + " call stack: " + ex.StackTrace);
+
+                var response = new
+                {
+                    StatusCode = 500,
+                    Message = "An internal server error occurred. Please try again later.",
+                    ErrorDetails = ex.Message
+                };
+
+                var jsonResponse = JsonSerializer.Serialize(response);
+                await httpContext.Response.WriteAsync(jsonResponse);
             }
         }
     }

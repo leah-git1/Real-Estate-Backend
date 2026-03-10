@@ -9,6 +9,10 @@ using WebApiShop.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer(connectionString));
+
+
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IUsersServices, UsersServices>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
@@ -28,15 +32,14 @@ builder.Services.AddScoped<IPropertyInquiryRepository, PropertyInquiryRepository
 builder.Services.AddScoped<IAdminInquiryRepository, AdminInquiryRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+
 builder.Host.UseNLog();
-builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer("Server = DESKTOP-TB3DT9H; Database = RealEstateDB_; Trusted_Connection = True; TrustServerCertificate = True;"));
-//builder.Configuration.GetConnectionString("DefaultConnection")
-// Add services to the container.
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
-//builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 builder.Services.AddCors(options =>
 {
@@ -49,44 +52,27 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-
 var app = builder.Build();
 
-//if (app.Environment.IsDevelopment())
-//{
-//    app.MapOpenApi();
-//    app.UseSwaggerUI(options =>
-//    {
-//        options.SwaggerEndpoint("/openapi/v1.json", "My API V1");
-//    });
-//}
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+   
+    app.UseDeveloperExceptionPage();
 }
 
-
-
-// Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
-
 app.UseCors();
+
 
 app.UseErrorHandling();
 app.UseMiddleware<AdminAuthorizationMiddleware>();
 app.UseRating();
 
 app.UseStaticFiles();
-
 app.UseRouting();
-
-app.UseCors();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

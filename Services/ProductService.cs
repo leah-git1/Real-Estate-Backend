@@ -115,8 +115,8 @@ namespace Services
             if (product == null || product.IsAvailable != true)
                 return false;
 
-            if (product.TransactionType == "Sale")
-                return true;
+            if (product.TransactionType == "Sale" || product.TransactionType == "מכירה")
+                return false;
 
             if (!start.HasValue || !end.HasValue)
                 return false;

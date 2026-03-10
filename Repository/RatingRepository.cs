@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Repository;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repositories
 {
@@ -18,6 +19,11 @@ namespace Repositories
             await _apiDbContext.Ratings.AddAsync(newRating);
             await _apiDbContext.SaveChangesAsync();
             return newRating;
+        }
+
+        public async Task<List<Rating>> GetAllRatings()
+        {
+            return await _apiDbContext.Ratings.ToListAsync();
         }
     }
 }

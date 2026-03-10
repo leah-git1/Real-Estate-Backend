@@ -8,8 +8,7 @@ namespace DTOs
 {
     public record OrderCreateDTO(
     int UserId,
-    List<OrderItemDTO> OrderItems,
-    decimal TotalAmount
+    List<OrderItemCreateDTO> OrderItems
     );
 
 }

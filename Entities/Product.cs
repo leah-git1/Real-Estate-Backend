@@ -39,5 +39,5 @@ public partial class Product
 
     public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
-    public string TransactionType { get; set; } = "Sale";
+    public string TransactionType { get; set; }
 }

@@ -17,5 +17,10 @@ namespace Services
         {
             return await _ratingRepository.AddRating(newRating);
         }
+
+        public async Task<List<Rating>> GetAllRatings()
+        {
+            return await _ratingRepository.GetAllRatings();
+        }
     }
 }
