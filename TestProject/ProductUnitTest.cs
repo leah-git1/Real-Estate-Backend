@@ -1,4 +1,4 @@
-﻿using Entities;
+using Entities;
 using Moq;
 using Repository;
 using System.Collections.Generic;
@@ -21,18 +21,18 @@ namespace TestProject
         public async Task GetProducts_ReturnsFilteredProducts()
         {
             // Arrange
-            var products = new List<ProductTbl>
+            var products = new List<Product>
             {
-                new ProductTbl { ProductId = 1, ProductName = "Product1", ProductPrice = 100, CategoryId = 1 },
-                new ProductTbl { ProductId = 2, ProductName = "Product2", ProductPrice = 200, CategoryId = 2 },
-                new ProductTbl { ProductId = 3, ProductName = "Product3", ProductPrice = 150, CategoryId = 1 }
+                new Product { ProductId = 1, Title = "Product1", Price = 100, CategoryId = 1 },
+                new Product { ProductId = 2, Title = "Product2", Price = 200, CategoryId = 2 },
+                new Product { ProductId = 3, Title = "Product3", Price = 150, CategoryId = 1 }
             };
 
-            _mockRepository.Setup(repo => repo.getProducts(It.IsAny<int?[]>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>()))
+            _mockRepository.Setup(repo => repo.GetProducts(It.IsAny<int?[]>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<decimal?>(), It.IsAny<decimal?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>()))
                            .ReturnsAsync((products, products.Count));
 
             // Act
-            var result = await _mockRepository.Object.getProducts(new int?[] { 1 }, 100, 200, 1, 10);
+            var result = await _mockRepository.Object.GetProducts(new int?[] { 1 }, null, null, 100, 200, null, null, 1, 10);
 
             // Assert
             Assert.NotNull(result);
@@ -44,11 +44,11 @@ namespace TestProject
         public async Task GetProducts_ReturnsZeroWhenNoProductsMatchCriteria()
         {
             // Arrange
-            _mockRepository.Setup(repo => repo.getProducts(It.IsAny<int?[]>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>()))
-                           .ReturnsAsync((new List<ProductTbl>(), 0));
+            _mockRepository.Setup(repo => repo.GetProducts(It.IsAny<int?[]>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<decimal?>(), It.IsAny<decimal?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>()))
+                           .ReturnsAsync((new List<Product>(), 0));
 
             // Act
-            var result = await _mockRepository.Object.getProducts(new int?[] { 1 }, 250, 300, 1, 10);
+            var result = await _mockRepository.Object.GetProducts(new int?[] { 1 }, null, null, 250, 300, null, null, 1, 10);
 
             // Assert
             Assert.NotNull(result);

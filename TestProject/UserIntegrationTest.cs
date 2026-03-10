@@ -1,4 +1,4 @@
-﻿using Entities;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using System.Threading.Tasks;
@@ -23,22 +23,22 @@ namespace TestProject
             // Arrange
             var user = new User
             {
-                FirstName = "Jane",
-                LastName = "Doe",
-                UserName = "JaneD",
-                Password = "SecurePassword"
+                FullName = "Jane Doe",
+                Email = "jane@test.com",
+                Password = "SecurePassword",
+                Phone = "123456789"
             };
 
             // Act
-            var result = await _usersRepository.registerUser(user);
+            var result = await _usersRepository.RegisterUser(user);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(user.UserName, result.UserName);
+            Assert.Equal(user.Email, result.Email);
 
             var savedUser = await _fixture.Context.Users.FirstOrDefaultAsync(x => x.UserId == result.UserId);
             Assert.NotNull(savedUser);
-            Assert.Equal(user.UserName, savedUser.UserName);
+            Assert.Equal(user.Email, savedUser.Email);
         }
 
         [Fact]
@@ -47,21 +47,21 @@ namespace TestProject
             // Arrange
             var user = new User
             {
-                FirstName = "Existing",
-                LastName = "User",
-                UserName = "ExistingUser",
-                Password = "Password123"
+                FullName = "Existing User",
+                Email = "existing@test.com",
+                Password = "Password123",
+                Phone = "987654321"
             };
 
-            await _usersRepository.registerUser(user);
+            await _usersRepository.RegisterUser(user);
 
             // Act
-            var fetchedUser = await _usersRepository.getUserById(user.UserId);
+            var fetchedUser = await _usersRepository.GetUserById(user.UserId);
 
             // Assert
             Assert.NotNull(fetchedUser);
             Assert.Equal(user.UserId, fetchedUser.UserId);
-            Assert.Equal(user.UserName, fetchedUser.UserName);
+            Assert.Equal(user.Email, fetchedUser.Email);
         }
 
         [Fact]
@@ -70,49 +70,43 @@ namespace TestProject
             // Arrange
             var user = new User
             {
-                FirstName = "Login",
-                LastName = "User",
-                UserName = "LoginUser",
-                Password = "UserPassword"
+                FullName = "Login User",
+                Email = "login@test.com",
+                Password = "UserPassword",
+                Phone = "555555555"
             };
 
-            await _usersRepository.registerUser(user);
-
-            var userToLog = new UserLog
-            {
-                userName = user.UserName,
-                password = user.Password
-            };
+            await _usersRepository.RegisterUser(user);
 
             // Act
-            var loggedUser = await _usersRepository.loginUser(userToLog);
+            var loggedUser = await _usersRepository.LoginUser(user.Email, user.Password);
 
             // Assert
             Assert.NotNull(loggedUser);
-            Assert.Equal(user.UserName, loggedUser.UserName);
+            Assert.Equal(user.Email, loggedUser.Email);
         }
 
         [Fact]
         public async Task UpdateUser_UpdatesUserInDatabase()
         {
             // Arrange
-            var user = new User { FirstName = "UserToUpdate", LastName = "UserLastName", UserName = "ToUpdate", Password = "OldPassword" };
-            var registeredUser = await _usersRepository.registerUser(user);
+            var user = new User { FullName = "UserToUpdate", Email = "update@test.com", Password = "OldPassword", Phone = "111111111" };
+            var registeredUser = await _usersRepository.RegisterUser(user);
 
-            registeredUser.FirstName = "UpdatedFirstName";
-            registeredUser.LastName = "UpdatedLastName";
+            registeredUser.FullName = "UpdatedName";
+            registeredUser.Phone = "222222222";
 
             // Act
-            var updatedUser = await _usersRepository.updateUser(registeredUser, registeredUser.UserId);
+            var updatedUser = await _usersRepository.UpdateUser(registeredUser, registeredUser.UserId);
 
             // Assert
             Assert.NotNull(updatedUser);
-            Assert.Equal("UpdatedFirstName", updatedUser.FirstName);
-            Assert.Equal("UpdatedLastName", updatedUser.LastName);
+            Assert.Equal("UpdatedName", updatedUser.FullName);
+            Assert.Equal("222222222", updatedUser.Phone);
 
-            var fetchedUser = await _usersRepository.getUserById(registeredUser.UserId);
-            Assert.Equal("UpdatedFirstName", fetchedUser.FirstName);
-            Assert.Equal("UpdatedLastName", fetchedUser.LastName);
+            var fetchedUser = await _usersRepository.GetUserById(registeredUser.UserId);
+            Assert.Equal("UpdatedName", fetchedUser.FullName);
+            Assert.Equal("222222222", fetchedUser.Phone);
         }
     }
 }

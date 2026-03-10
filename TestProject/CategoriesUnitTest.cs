@@ -21,16 +21,16 @@ namespace TestProject
         public async Task GetCategories_ReturnsAllCategories()
         {
             // Arrange
-            var categories = new List<CategoriesTbl>
+            var categories = new List<Category>
             {
-                new CategoriesTbl { CategoryId = 1, CategoryName = "Electronics" },
-                new CategoriesTbl { CategoryId = 2, CategoryName = "Clothing" }
+                new Category { CategoryId = 1, CategoryName = "Electronics" },
+                new Category { CategoryId = 2, CategoryName = "Clothing" }
             };
 
-            _mockRepository.Setup(repo => repo.getCategories()).ReturnsAsync(categories);
+            _mockRepository.Setup(repo => repo.GetAllCategories()).ReturnsAsync(categories);
 
             // Act
-            var result = await _mockRepository.Object.getCategories();
+            var result = await _mockRepository.Object.GetAllCategories();
 
             // Assert
             Assert.NotNull(result);
@@ -41,12 +41,12 @@ namespace TestProject
         public async Task GetCategories_ReturnsEmptyListWhenNoCategoriesExist()
         {
             // Arrange
-            var categories = new List<CategoriesTbl>(); // אין קטגוריות
+            var categories = new List<Category>();
 
-            _mockRepository.Setup(repo => repo.getCategories()).ReturnsAsync(categories);
+            _mockRepository.Setup(repo => repo.GetAllCategories()).ReturnsAsync(categories);
 
             // Act
-            var result = await _mockRepository.Object.getCategories();
+            var result = await _mockRepository.Object.GetAllCategories();
 
             // Assert
             Assert.NotNull(result);

@@ -1,4 +1,4 @@
-﻿using Entities;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using System;
@@ -24,18 +24,18 @@ namespace TestProject
             // Arrange
             var user = new User
             {
-                UserName = "TestUser@w",
-                Password = "TestPassword", // שדה חובה
-                                           // הוסף שדות נוספים אם יש 
+                FullName = "TestUser",
+                Email = "test@test.com",
+                Password = "TestPassword"
             };
 
             _fixture.Context.Users.Add(user);
-            await _fixture.Context.SaveChangesAsync(); // שמירה של המשתמש
+            await _fixture.Context.SaveChangesAsync();
 
-            var order = new OrdersTbl
+            var order = new Order
             {
-                OrderDate = DateOnly.FromDateTime(DateTime.Now),
-                OrderSum = 150.0,
+                OrderDate = DateTime.Now,
+                TotalAmount = 150.0m,
                 UserId = user.UserId
             };
 
@@ -44,12 +44,12 @@ namespace TestProject
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(order.OrderSum, result.OrderSum);
+            Assert.Equal(order.TotalAmount, result.TotalAmount);
             Assert.Equal(order.UserId, result.UserId);
 
-            var savedOrder = await _fixture.Context.OrdersTbls.FirstOrDefaultAsync(x => x.OrderId == result.OrderId);
+            var savedOrder = await _fixture.Context.Orders.FirstOrDefaultAsync(x => x.OrderId == result.OrderId);
             Assert.NotNull(savedOrder);
-            Assert.Equal(order.OrderSum, savedOrder.OrderSum);
+            Assert.Equal(order.TotalAmount, savedOrder.TotalAmount);
             Assert.Equal(order.UserId, savedOrder.UserId);
         }
 
@@ -59,25 +59,25 @@ namespace TestProject
             // Arrange
             var user = new User
             {
-                UserName = "TestUser",
+                FullName = "TestUser2",
+                Email = "test2@test.com",
                 Password = "TestPassword"
-                // הוסף שדות נוספים אם יש
             };
 
             _fixture.Context.Users.Add(user);
-            await _fixture.Context.SaveChangesAsync(); // שמור את המשתמש
+            await _fixture.Context.SaveChangesAsync();
 
-            var order = new OrdersTbl
+            var order = new Order
             {
-                OrderDate = DateOnly.FromDateTime(DateTime.Now),
-                OrderSum = 150.0,
-                UserId = user.UserId // השתמש במזהה המשתמש שיצרת
+                OrderDate = DateTime.Now,
+                TotalAmount = 150.0m,
+                UserId = user.UserId
             };
 
-            await _orderRepository.AddOrder(order); // הוספת ההזמנה
+            await _orderRepository.AddOrder(order);
 
             // Act
-            var fetchedOrder = await _orderRepository.getOrderById(order.OrderId);
+            var fetchedOrder = await _orderRepository.GetOrderById(order.OrderId);
 
             // Assert
             Assert.NotNull(fetchedOrder);
@@ -89,10 +89,56 @@ namespace TestProject
         public async Task GetOrderById_ReturnsNullWhenOrderDoesNotExist()
         {
             // Act
-            var result = await _orderRepository.getOrderById(99); // Assuming 99 does not exist
+            var result = await _orderRepository.GetOrderById(99);
 
             // Assert
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task AddOrder_CalculatesCorrectSum_HappyPath()
+        {
+            // Arrange
+            var user = new User { FullName = "SumTestUser", Email = "sum@test.com", Password = "Pass123" };
+            _fixture.Context.Users.Add(user);
+            await _fixture.Context.SaveChangesAsync();
+
+            var order = new Order
+            {
+                OrderDate = DateTime.Now,
+                TotalAmount = 500.0m,
+                UserId = user.UserId
+            };
+
+            // Act
+            var result = await _orderRepository.AddOrder(order);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(500.0m, result.TotalAmount);
+        }
+
+        [Fact]
+        public async Task AddOrder_HandlesZeroSum_UnhappyPath()
+        {
+            // Arrange
+            var user = new User { FullName = "ZeroSumUser", Email = "zero@test.com", Password = "Pass123" };
+            _fixture.Context.Users.Add(user);
+            await _fixture.Context.SaveChangesAsync();
+
+            var order = new Order
+            {
+                OrderDate = DateTime.Now,
+                TotalAmount = 0.0m,
+                UserId = user.UserId
+            };
+
+            // Act
+            var result = await _orderRepository.AddOrder(order);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(0.0m, result.TotalAmount);
         }
     }
 }

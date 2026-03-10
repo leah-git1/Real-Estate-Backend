@@ -15,19 +15,15 @@ namespace TestProject
         public DatabaseFixture()
         {
 
-            // Set up the test database connection and initialize the context
+            // Use in-memory database for testing
             var options = new DbContextOptionsBuilder<ShopContext>()
-
-                .UseSqlServer("Server=srv2\\pupils;Database=TestDataBase;Trusted_Connection=True;TrustServerCertificate=True;")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             Context = new ShopContext(options);
-            Context.Database.EnsureCreated();
         }
 
         public void Dispose()
         {
-            // Clean up the test database after all tests are completed
-            Context.Database.EnsureDeleted();
             Context.Dispose();
         }
     }

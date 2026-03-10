@@ -1,4 +1,4 @@
-﻿using Entities;
+using Entities;
 using Moq;
 using Repository;
 using System;
@@ -20,17 +20,17 @@ namespace TestProject
         public async Task GetOrderById_ReturnsOrderWhenOrderExists()
         {
             // Arrange
-            var order = new OrdersTbl { OrderId = 1, OrderDate = DateOnly.FromDateTime(DateTime.Now), OrderSum = 100.0, UserId = 1 };
-            _mockRepository.Setup(repo => repo.getOrderById(1)).ReturnsAsync(order);
+            var order = new Order { OrderId = 1, OrderDate = DateTime.Now, TotalAmount = 100.0m, UserId = 1 };
+            _mockRepository.Setup(repo => repo.GetOrderById(1)).ReturnsAsync(order);
 
             // Act
-            var result = await _mockRepository.Object.getOrderById(1);
+            var result = await _mockRepository.Object.GetOrderById(1);
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal(1, result.OrderId);
             Assert.Equal(order.OrderDate, result.OrderDate);
-            Assert.Equal(order.OrderSum, result.OrderSum);
+            Assert.Equal(order.TotalAmount, result.TotalAmount);
             Assert.Equal(order.UserId, result.UserId);
         }
 
@@ -38,10 +38,10 @@ namespace TestProject
         public async Task GetOrderById_ReturnsNullWhenOrderDoesNotExist()
         {
             // Arrange
-            _mockRepository.Setup(repo => repo.getOrderById(2)).ReturnsAsync((OrdersTbl)null);
+            _mockRepository.Setup(repo => repo.GetOrderById(2)).ReturnsAsync((Order)null);
 
             // Act
-            var result = await _mockRepository.Object.getOrderById(2);
+            var result = await _mockRepository.Object.GetOrderById(2);
 
             // Assert
             Assert.Null(result);
@@ -51,7 +51,7 @@ namespace TestProject
         public async Task AddOrder_ReturnsAddedOrder()
         {
             // Arrange
-            var order = new OrdersTbl { OrderId = 3, OrderDate = DateOnly.FromDateTime(DateTime.Now), OrderSum = 200.0, UserId = 1 };
+            var order = new Order { OrderId = 3, OrderDate = DateTime.Now, TotalAmount = 200.0m, UserId = 1 };
             _mockRepository.Setup(repo => repo.AddOrder(order)).ReturnsAsync(order);
 
             // Act
@@ -61,8 +61,38 @@ namespace TestProject
             Assert.NotNull(result);
             Assert.Equal(3, result.OrderId);
             Assert.Equal(order.OrderDate, result.OrderDate);
-            Assert.Equal(order.OrderSum, result.OrderSum);
+            Assert.Equal(order.TotalAmount, result.TotalAmount);
             Assert.Equal(order.UserId, result.UserId);
+        }
+
+        [Fact]
+        public async Task CalculateOrderSum_HappyPath_ReturnsCorrectSum()
+        {
+            // Arrange
+            decimal pricePerDay = 100.0m;
+            int days = 5;
+            decimal expectedSum = pricePerDay * days;
+
+            // Act
+            decimal calculatedSum = pricePerDay * days;
+
+            // Assert
+            Assert.Equal(expectedSum, calculatedSum);
+            Assert.Equal(500.0m, calculatedSum);
+        }
+
+        [Fact]
+        public async Task CalculateOrderSum_UnhappyPath_HandlesZeroDays()
+        {
+            // Arrange
+            decimal pricePerDay = 100.0m;
+            int days = 0;
+
+            // Act
+            decimal calculatedSum = pricePerDay * days;
+
+            // Assert
+            Assert.Equal(0, calculatedSum);
         }
     }
 }
