@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 namespace DTOs
 {
     public record OrderCreateDTO(
-    int UserId,
-    List<OrderItemCreateDTO> OrderItems
-    );
+            int UserId,
+            List<OrderItemCreateDTO> OrderItems,
+            decimal ExpectedTotalAmount
+        );
 
 }

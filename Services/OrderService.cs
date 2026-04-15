@@ -1,6 +1,7 @@
 using AutoMapper;
 using DTOs;
 using Entities;
+using Microsoft.Extensions.Logging;
 using Repository;
 using System;
 using System.Collections.Generic;
@@ -16,15 +17,17 @@ namespace Services
         private readonly IProductRepository _iProductRepository;
         private readonly IProductService _iProductService;
         private readonly IUsersRepository _iUsersRepository;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper;   
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IOrderRepository iOrderRepository, IProductRepository iProductRepository, IProductService iProductService, IUsersRepository iUsersRepository, IMapper mapper)
+        public OrderService(IOrderRepository iOrderRepository, IProductRepository iProductRepository, IProductService iProductService, IUsersRepository iUsersRepository, IMapper mapper, ILogger<OrderService> logger)
         {
             this._iOrderRepository = iOrderRepository;
             this._iProductRepository = iProductRepository;
             this._iProductService = iProductService;
             this._iUsersRepository = iUsersRepository;
             this._mapper = mapper;
+            this._logger = logger;
         }
 
         public async Task<OrderDTO> GetOrderById(int id)
@@ -97,6 +100,14 @@ namespace Services
                 };
 
                 order.OrderItems.Add(newItem);
+            }
+
+            if (createOrder.ExpectedTotalAmount != calculatedTotal)
+            {
+                _logger.LogWarning("Order sum mismatch for UserId {UserId}. Expected: {ExpectedTotalAmount}, Actual: {CalculatedTotal}.",
+                    createOrder.UserId, createOrder.ExpectedTotalAmount, calculatedTotal);
+
+                throw new Exception($"Order sum mismatch. Expected: {createOrder.ExpectedTotalAmount}, Actual: {calculatedTotal}");
             }
 
             order.TotalAmount = calculatedTotal;

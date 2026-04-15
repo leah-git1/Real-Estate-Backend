@@ -1,8 +1,8 @@
-USE RealEstateDB_;
+USE RealEstateEND;
 GO
 
 -- =============================================
--- 1. ניקוי מוחלט של כל הנתונים (בסדר הפוך לקשרים)
+-- 1. ניקוי מוחלט של כל הנתונים (בסדר הפוך לקשרים כדי למנוע שגיאות Foreign Key)
 -- =============================================
 DELETE FROM AdminInquiries;
 DELETE FROM PropertyInquiries;
@@ -13,40 +13,46 @@ DELETE FROM ProductImages;
 DELETE FROM Products;
 DELETE FROM Categories;
 DELETE FROM Users;
+GO
 
--- איפוס המונים (Identity) כדי שה-ID הראשון שיוכנס יהיה 1
-DBCC CHECKIDENT ('Users', RESEED, 0);
-DBCC CHECKIDENT ('Categories', RESEED, 0);
-DBCC CHECKIDENT ('Products', RESEED, 0);
+-- איפוס המונים (Identity) כדי שה-ID הראשון שיוכנס יהיה 1 לכל הטבלאות
+DBCC CHECKIDENT ('AdminInquiries', RESEED, 0);
+DBCC CHECKIDENT ('PropertyInquiries', RESEED, 0);
+DBCC CHECKIDENT ('Ratings', RESEED, 0);
+DBCC CHECKIDENT ('OrderItems', RESEED, 0);
 DBCC CHECKIDENT ('Orders', RESEED, 0);
+DBCC CHECKIDENT ('ProductImages', RESEED, 0);
+DBCC CHECKIDENT ('Products', RESEED, 0);
+DBCC CHECKIDENT ('Categories', RESEED, 0);
+DBCC CHECKIDENT ('Users', RESEED, 0);
 GO
 
 -- =============================================
 -- 2. הכנסת משתמשים (11 משתמשים)
 -- =============================================
 INSERT INTO Users (FullName, Email, Password, Phone, Address, IsAdmin) VALUES
-('אורי כהן', 'uri@example.com', 'password1', '050-1234567', 'תל אביב', 0),
-('מיה לוי', 'maya@example.com', 'password2', '050-2345678', 'חיפה', 0),
-('דניאל פרץ', 'daniel@example.com', 'password3', '050-3456789', 'ירושלים', 0),
-('אנה רוזנברג', 'anna@example.com', 'password4', '050-4567890', 'נתניה', 0),
-('יוסי ברק', 'yossi@example.com', 'password5', '050-5678901', 'באר שבע', 0),
-('שירה דיין', 'shira@example.com', 'password6', '050-6789012', 'רמת גן', 0),
-('עומרי גולדברג', 'omri@example.com', 'password7', '050-7890123', 'אשדוד', 0),
-('נועה אברהם', 'noa@example.com', 'password8', '050-8901234', 'ראשון לציון', 0),
-('איתן שמואלי', 'eitan@example.com', 'password9', '050-9012345', 'רחובות', 0),
-('תמר בן דוד', 'tamar@example.com', 'password10', '050-0123456', 'כפר סבא', 0),
-('מנהל מערכת', 'admin@example.com', 'adminpass', '050-1111111', 'תל אביב', 1);
+(N'אורי כהן', N'uri@example.com', N'password1', N'050-1234567', N'תל אביב', 0),
+(N'מיה לוי', N'maya@example.com', N'password2', N'050-2345678', N'חיפה', 0),
+(N'דניאל פרץ', N'daniel@example.com', N'password3', N'050-3456789', N'ירושלים', 0),
+(N'אנה רוזנברג', N'anna@example.com', N'password4', N'050-4567890', N'נתניה', 0),
+(N'יוסי ברק', N'yossi@example.com', N'password5', N'050-5678901', N'באר שבע', 0),
+(N'שירה דיין', N'shira@example.com', N'password6', N'050-6789012', N'רמת גן', 0),
+(N'עומרי גולדברג', N'omri@example.com', N'password7', N'050-7890123', N'אשדוד', 0),
+(N'נועה אברהם', N'noa@example.com', N'password8', N'050-8901234', N'ראשון לציון', 0),
+(N'איתן שמואלי', N'eitan@example.com', N'password9', N'050-9012345', N'רחובות', 0),
+(N'תמר בן דוד', N'tamar@example.com', N'password10', N'050-0123456', N'כפר סבא', 0),
+(N'מנהל מערכת', N'admin@example.com', N'adminpass', N'050-1111111', N'תל אביב', 1);
 GO
 
 -- =============================================
 -- 3. הכנסת קטגוריות (5 קטגוריות)
 -- =============================================
 INSERT INTO Categories (CategoryName, Description) VALUES
-('דירות', 'דירות למכירה או להשכרה'),
-('בתים פרטיים', 'בתים פרטיים עם גינה'),
-('נופשים', 'נכסי נופש וצימרים'),
-('מגרשים', 'קרקעות לבנייה'),
-('פרויקטים', 'פרויקטים חדשים מקבלן');
+(N'דירות', N'דירות למכירה או להשכרה'),
+(N'בתים פרטיים', N'בתים פרטיים עם גינה'),
+(N'נופשים', N'נכסי נופש וצימרים'),
+(N'מגרשים', N'קרקעות לבנייה'),
+(N'פרויקטים', N'פרויקטים חדשים מקבלן');
 GO
 
 -- =============================================
@@ -54,50 +60,52 @@ GO
 -- =============================================
 INSERT INTO Products (Title, Description, Price, ImageUrl, CategoryID, City, Rooms, Beds, OwnerID, TransactionType)
 VALUES
-('דירה למכירה בתל אביב', 'דירה יוקרתית עם נוף לים', 2000000, '/images/property_1_1.jpg', 1, 'תל אביב', 3, 2, 1, 'מכירה'),
-('בית פרטי להשכרה בנתניה', 'בית פרטי עם בריכה', 6000, '/images/property_2_1.jpg', 2, 'נתניה', 4, 3, 2, 'השכרה'),
-('נופש חלומי באילת', 'סוויטה מפנקת עם ספא', 3000, '/images/property_3_1.jpg', 3, 'אילת', 3, 2, 3, 'נופש'),
-('מגרש למכירה בצפון', 'מגרש יוקרתי מתאים לבנייה', 800000, '/images/property_4_1.jpg', 4, 'צפון', NULL, NULL, 4, 'מכירה'),
-('פרויקט חדש בירושלים', 'דירות חדשות במיקום מרכזי', 2500000, '/images/property_5_1.jpg', 5, 'ירושלים', NULL, NULL, 5, 'מכירה'),
-('דירה להשכרה בחיפה', 'דירה מרווחת עם מרפסת', 4000, '/images/property_6_1.jpg', 1, 'חיפה', 2, 1, 6, 'השכרה'),
-('נופש משפחתי באילת', 'חופשה משפחתית עם פעילויות', 3500, '/images/property_7_1.jpg', 3, 'אילת', 4, 3, 7, 'נופש'),
-('דירה להשכרה בירושלים', 'דירה במרכז העיר', 4500, '/images/property_8_1.jpg', 1, 'ירושלים', 2, 1, 8, 'השכרה'),
-('בית פרטי למכירה באשדוד', 'בית פרטי עם בריכה', 2500000, '/images/property_9_1.jpg', 2, 'אשדוד', 5, 4, 9, 'מכירה'),
-('נופש יוקרתי בתל אביב', 'סוויטה יוקרתית', 7000, '/images/property_10_1.jpg', 3, 'תל אביב', 2, 2, 10, 'נופש'),
-('דירה למכירה באשקלון', 'דירה עם נוף לים', 1800000, '/images/property_11_1.jpg', 1, 'אשקלון', 3, 2, 1, 'מכירה'),
-('נופש רומנטי בים המלח', 'חופשה רומנטית עם ספא', 5000, '/images/property_12_1.jpg', 3, 'ים המלח', 1, 1, 2, 'נופש'),
-('בית פרטי בפתח תקווה', 'בית פרטי עם גינה', 7000, '/images/property_13_1.jpg', 2, 'פתח תקווה', 4, 3, 3, 'השכרה'),
-('נופש באילת', 'חופשה עם פעילויות לילדים', 3500, '/images/property_14_1.jpg', 3, 'אילת', 4, 3, 4, 'נופש'),
-('דירה ברמת גן', 'דירה במיקום מצוין', 2200000, '/images/property_15_1.jpg', 1, 'רמת גן', 3, 2, 5, 'מכירה'),
-('נופש יוקרתי באילת', 'סוויטה עם נוף לים', 8000, '/images/property_16_1.jpg', 3, 'אילת', 2, 2, 6, 'נופש'),
-('מגרש בירושלים', 'מגרש במיקום פרטי', 1200000, '/images/property_17_1.jpg', 4, 'ירושלים', NULL, NULL, 7, 'מכירה'),
-('דירה בבת ים', 'דירה עם מרפסת לים', 5000, '/images/property_18_1.jpg', 1, 'בת ים', 2, 1, 8, 'השכרה'),
-('נופש משפחתי באילת', 'נופש עם משפחה', 4500, '/images/property_19_1.jpg', 3, 'אילת', 3, 2, 9, 'נופש'),
-('בית פרטי בכפר סבא', 'גינה מטופחת ובריכה', 2600000, '/images/property_20_1.jpg', 2, 'כפר סבא', 5, 4, 10, 'מכירה'),
-('סוויטה באילת', 'בריכה פרטית ונוף לים', 9000, '/images/property_21_1.jpg', 3, 'אילת', 2, 2, 1, 'נופש'),
-('דירה בנתניה', 'נוף לים ומרפסת', 2100000, '/images/property_22_1.jpg', 1, 'נתניה', 3, 2, 2, 'מכירה'),
-('נופש בתל אביב', 'חופשה משפחתית', 6000, '/images/property_23_1.jpg', 3, 'תל אביב', 4, 3, 3, 'נופש'),
-('בית פרטי באשקלון', 'בית קרוב לים', 7500, '/images/property_24_1.jpg', 2, 'אשקלון', 4, 3, 4, 'השכרה'),
-('נופש רומנטי באילת', 'חופשה רומנטית', 5500, '/images/property_25_1.jpg', 3, 'אילת', 1, 1, 5, 'נופש'),
-('דירה בראשון לציון', 'דירה חדשה במרכז', 2300000, '/images/property_26_1.jpg', 1, 'ראשון לציון', 3, 2, 6, 'מכירה'),
-('נופש בים המלח', 'ספא ונוף מדהים', 4000, '/images/property_27_1.jpg', 3, 'ים המלח', 2, 1, 7, 'נופש'),
-('בית פרטי בנתניה', 'בית עם גינה מטופחת', 2500000, '/images/property_28_1.jpg', 2, 'נתניה', 5, 4, 8, 'מכירה'),
-('נופש באילת', 'בריכה פרטית ויוקרה', 10000, '/images/property_29_1.jpg', 3, 'אילת', 2, 2, 9, 'נופש'),
-('דירה ביפו', 'דירה עם נוף לים', 4500, '/images/property_30_1.jpg', 1, 'יפו', 2, 1, 10, 'השכרה');
+(N'דירה למכירה בתל אביב', N'דירה יוקרתית עם נוף לים', 2000000, N'/images/property_1_1.jpg', 1, N'תל אביב', 3, 2, 1, N'מכירה'),
+(N'בית פרטי להשכרה בנתניה', N'בית פרטי עם בריכה', 6000, N'/images/property_2_1.jpg', 2, N'נתניה', 4, 3, 2, N'השכרה'),
+(N'נופש חלומי באילת', N'סוויטה מפנקת עם ספא', 3000, N'/images/property_3_1.jpg', 3, N'אילת', 3, 2, 3, N'נופש'),
+(N'מגרש למכירה בצפון', N'מגרש יוקרתי מתאים לבנייה', 800000, N'/images/property_4_1.jpg', 4, N'צפון', NULL, NULL, 4, N'מכירה'),
+(N'פרויקט חדש בירושלים', N'דירות חדשות במיקום מרכזי', 2500000, N'/images/property_5_1.jpg', 5, N'ירושלים', NULL, NULL, 5, N'מכירה'),
+(N'דירה להשכרה בחיפה', N'דירה מרווחת עם מרפסת', 4000, N'/images/property_6_1.jpg', 1, N'חיפה', 2, 1, 6, N'השכרה'),
+(N'נופש משפחתי באילת', N'חופשה משפחתית עם פעילויות', 3500, N'/images/property_7_1.jpg', 3, N'אילת', 4, 3, 7, N'נופש'),
+(N'דירה להשכרה בירושלים', N'דירה במרכז העיר', 4500, N'/images/property_8_1.jpg', 1, N'ירושלים', 2, 1, 8, N'השכרה'),
+(N'בית פרטי למכירה באשדוד', N'בית פרטי עם בריכה', 2500000, N'/images/property_9_1.jpg', 2, N'אשדוד', 5, 4, 9, N'מכירה'),
+(N'נופש יוקרתי בתל אביב', N'סוויטה יוקרתית', 7000, N'/images/property_10_1.jpg', 3, N'תל אביב', 2, 2, 10, N'נופש'),
+(N'דירה למכירה באשקלון', N'דירה עם נוף לים', 1800000, N'/images/property_11_1.jpg', 1, N'אשקלון', 3, 2, 1, N'מכירה'),
+(N'נופש רומנטי בים המלח', N'חופשה רומנטית עם ספא', 5000, N'/images/property_12_1.jpg', 3, N'ים המלח', 1, 1, 2, N'נופש'),
+(N'בית פרטי בפתח תקווה', N'בית פרטי עם גינה', 7000, N'/images/property_13_1.jpg', 2, N'פתח תקווה', 4, 3, 3, N'השכרה'),
+(N'נופש באילת', N'חופשה עם פעילויות לילדים', 3500, N'/images/property_14_1.jpg', 3, N'אילת', 4, 3, 4, N'נופש'),
+(N'דירה ברמת גן', N'דירה במיקום מצוין', 2200000, N'/images/property_15_1.jpg', 1, N'רמת גן', 3, 2, 5, N'מכירה'),
+(N'נופש יוקרתי באילת', N'סוויטה עם נוף לים', 8000, N'/images/property_16_1.jpg', 3, N'אילת', 2, 2, 6, N'נופש'),
+(N'מגרש בירושלים', N'מגרש במיקום פרטי', 1200000, N'/images/property_17_1.jpg', 4, N'ירושלים', NULL, NULL, 7, N'מכירה'),
+(N'דירה בבת ים', N'דירה עם מרפסת לים', 5000, N'/images/property_18_1.jpg', 1, N'בת ים', 2, 1, 8, N'השכרה'),
+(N'נופש משפחתי באילת', N'נופש עם משפחה', 4500, N'/images/property_19_1.jpg', 3, N'אילת', 3, 2, 9, N'נופש'),
+(N'בית פרטי בכפר סבא', N'גינה מטופחת ובריכה', 2600000, N'/images/property_20_1.jpg', 2, N'כפר סבא', 5, 4, 10, N'מכירה'),
+(N'סוויטה באילת', N'בריכה פרטית ונוף לים', 9000, N'/images/property_21_1.jpg', 3, N'אילת', 2, 2, 1, N'נופש'),
+(N'דירה בנתניה', N'נוף לים ומרפסת', 2100000, N'/images/property_22_1.jpg', 1, N'נתניה', 3, 2, 2, N'מכירה'),
+(N'נופש בתל אביב', N'חופשה משפחתית', 6000, N'/images/property_23_1.jpg', 3, N'תל אביב', 4, 3, 3, N'נופש'),
+(N'בית פרטי באשקלון', N'בית קרוב לים', 7500, N'/images/property_24_1.jpg', 2, N'אשקלון', 4, 3, 4, N'השכרה'),
+(N'נופש רומנטי באילת', N'חופשה רומנטית', 5500, N'/images/property_25_1.jpg', 3, N'אילת', 1, 1, 5, N'נופש'),
+(N'דירה בראשון לציון', N'דירה חדשה במרכז', 2300000, N'/images/property_26_1.jpg', 1, N'ראשון לציון', 3, 2, 6, N'מכירה'),
+(N'נופש בים המלח', N'ספא ונוף מדהים', 4000, N'/images/property_27_1.jpg', 3, N'ים המלח', 2, 1, 7, N'נופש'),
+(N'בית פרטי בנתניה', N'בית עם גינה מטופחת', 2500000, N'/images/property_28_1.jpg', 2, N'נתניה', 5, 4, 8, N'מכירה'),
+(N'נופש באילת', N'בריכה פרטית ויוקרה', 10000, N'/images/property_29_1.jpg', 3, N'אילת', 2, 2, 9, N'נופש'),
+(N'דירה ביפו', N'דירה עם נוף לים', 4500, N'/images/property_30_1.jpg', 1, N'יפו', 2, 1, 10, N'השכרה');
 GO
 
 -- =============================================
--- 5. הכנסת תמונות נוספות (3 לכל מוצר)
+-- 5. הכנסת תמונות נוספות (3 לכל מוצר) באמצעות לולאה
 -- =============================================
 DECLARE @pID INT = (SELECT MIN(ProductID) FROM Products);
 DECLARE @maxPID INT = (SELECT MAX(ProductID) FROM Products);
+
 WHILE @pID <= @maxPID
 BEGIN
     INSERT INTO ProductImages (ProductID, AdditionalImageUrl)
     VALUES 
-    (@pID, '/images/property_' + CAST((@pID - (SELECT MIN(ProductID) FROM Products) + 1) AS NVARCHAR(10)) + '_2.jpg'),
-    (@pID, '/images/property_' + CAST((@pID - (SELECT MIN(ProductID) FROM Products) + 1) AS NVARCHAR(10)) + '_3.jpg'),
-    (@pID, '/images/property_' + CAST((@pID - (SELECT MIN(ProductID) FROM Products) + 1) AS NVARCHAR(10)) + '_4.jpg');
+    (@pID, N'/images/property_' + CAST((@pID - (SELECT MIN(ProductID) FROM Products) + 1) AS NVARCHAR(10)) + N'_2.jpg'),
+    (@pID, N'/images/property_' + CAST((@pID - (SELECT MIN(ProductID) FROM Products) + 1) AS NVARCHAR(10)) + N'_3.jpg'),
+    (@pID, N'/images/property_' + CAST((@pID - (SELECT MIN(ProductID) FROM Products) + 1) AS NVARCHAR(10)) + N'_4.jpg');
+    
     SET @pID = @pID + 1;
 END
 GO
@@ -106,24 +114,24 @@ GO
 -- 6. הכנסת הזמנות (Orders)
 -- =============================================
 INSERT INTO Orders (UserID, OrderDate, TotalAmount, Status) VALUES
-(1, '2024-01-01', 3000, 'Completed'),
-(2, '2024-01-03', 3500, 'Pending'),
-(3, '2024-01-05', 5000, 'Completed'),
-(4, '2024-01-07', 4500, 'Pending'),
-(5, '2024-01-10', 4000, 'Completed'),
-(6, '2024-01-12', 6000, 'Pending'),
-(7, '2024-01-15', 5500, 'Completed'),
-(8, '2024-01-18', 7000, 'Pending'),
-(9, '2024-01-20', 8000, 'Completed'),
-(10,'2024-01-22', 9000, 'Pending');
+(1, '2024-01-01', 3000, N'Completed'),
+(2, '2024-01-03', 3500, N'Pending'),
+(3, '2024-01-05', 5000, N'Completed'),
+(4, '2024-01-07', 4500, N'Pending'),
+(5, '2024-01-10', 4000, N'Completed'),
+(6, '2024-01-12', 6000, N'Pending'),
+(7, '2024-01-15', 5500, N'Completed'),
+(8, '2024-01-18', 7000, N'Pending'),
+(9, '2024-01-20', 8000, N'Completed'),
+(10,'2024-01-22', 9000, N'Pending');
 GO
 
 -- =============================================
 -- 7. הכנסת פריטי הזמנה (OrderItems)
 -- =============================================
 INSERT INTO OrderItems (OrderID, ProductID, StartDate, EndDate, PriceAtPurchase) VALUES
-(1, 3, '2024-03-01', '2024-03-07', 3000),
-(2, 7, '2024-03-10', '2024-03-15', 3500),
+(1, 3,  '2024-03-01', '2024-03-07', 3000),
+(2, 7,  '2024-03-10', '2024-03-15', 3500),
 (3, 12, '2024-04-01', '2024-04-06', 5000),
 (4, 14, '2024-04-10', '2024-04-15', 4500),
 (5, 10, '2024-05-01', '2024-05-05', 4000),
@@ -131,51 +139,51 @@ INSERT INTO OrderItems (OrderID, ProductID, StartDate, EndDate, PriceAtPurchase)
 (7, 19, '2024-06-01', '2024-06-06', 5500),
 (8, 20, '2024-06-10', '2024-06-15', 7000),
 (9, 21, '2024-07-01', '2024-07-06', 8000),
-(10, 26, '2024-07-10', '2024-07-15', 9000);
+(10, 26,'2024-07-10', '2024-07-15', 9000);
 GO
 
 -- =============================================
 -- 8. הכנסת דירוגים/לוגים (Ratings)
 -- =============================================
 INSERT INTO Ratings (Host, Method, Path, Referer, UserAgent) VALUES
-('localhost', 'GET', '/products/1',  'http://example.com', 'Mozilla/5.0'),
-('localhost', 'GET', '/products/2',  'http://example.com', 'Mozilla/5.0'),
-('localhost', 'POST','/orders',      'http://example.com', 'Mozilla/5.0'),
-('api.server','GET', '/products/10', 'http://example.com', 'Chrome/120'),
-('api.server','GET', '/products/15', 'http://example.com', 'Chrome/120'),
-('api.server','POST','/login',       'http://example.com', 'Edge/121'),
-('localhost', 'GET', '/products/20', 'http://example.com', 'Firefox/118'),
-('localhost', 'GET', '/products/25', 'http://example.com', 'Firefox/118');
+(N'localhost', N'GET',  N'/products/1',  N'http://example.com', N'Mozilla/5.0'),
+(N'localhost', N'GET',  N'/products/2',  N'http://example.com', N'Mozilla/5.0'),
+(N'localhost', N'POST', N'/orders',      N'http://example.com', N'Mozilla/5.0'),
+(N'api.server',N'GET',  N'/products/10', N'http://example.com', N'Chrome/120'),
+(N'api.server',N'GET',  N'/products/15', N'http://example.com', N'Chrome/120'),
+(N'api.server',N'POST', N'/login',       N'http://example.com', N'Edge/121'),
+(N'localhost', N'GET',  N'/products/20', N'http://example.com', N'Firefox/118'),
+(N'localhost', N'GET',  N'/products/25', N'http://example.com', N'Firefox/118');
 GO
 
 -- =============================================
 -- 9. פניות לגבי נכסים (PropertyInquiries)
 -- =============================================
 INSERT INTO PropertyInquiries (ProductID, UserID, OwnerID, Name, Phone, Email, Message) VALUES
-(1,  2, 1, 'מיה לוי',      '050-2345678', 'maya@example.com',   'מעוניינת בפרטים נוספים'),
-(2,  3, 1, 'דניאל פרץ',   '050-3456789', 'daniel@example.com', 'אפשר פרטים על הנכס'),
-(3,  4, 1, 'אנה רוזנברג', '050-4567890', 'anna@example.com',   'מה כולל המחיר'),
-(4,  5, 1, 'יוסי ברק',    '050-5678901', 'yossi@example.com',  'זמין לבנייה מיידית?'),
-(5,  6, 1, 'שירה דיין',   '050-6789012', 'shira@example.com',  'רוצה לשמוע עוד'),
-(6,  7, 1, 'עומרי גולדברג','050-7890123','omri@example.com',   'אפשר תמונות נוספות'),
-(7,  8, 1, 'נועה אברהם',  '050-8901234', 'noa@example.com',    'מתאים למשפחה?'),
-(8,  9, 1, 'איתן שמואלי','050-9012345', 'eitan@example.com',  'מה מצב הנכס'),
-(9, 10, 1, 'תמר בן דוד', '050-0123456', 'tamar@example.com',  'מעוניינת לקבוע פגישה'),
-(10, 1, 1, 'אורי כהן',    '050-1234567', 'uri@example.com',    'שאלה כללית על הנכס');
+(1,  2,  1, N'מיה לוי',      N'050-2345678', N'maya@example.com',   N'מעוניינת בפרטים נוספים'),
+(2,  3,  1, N'דניאל פרץ',    N'050-3456789', N'daniel@example.com', N'אפשר פרטים על הנכס'),
+(3,  4,  1, N'אנה רוזנברג',  N'050-4567890', N'anna@example.com',   N'מה כולל המחיר'),
+(4,  5,  1, N'יוסי ברק',     N'050-5678901', N'yossi@example.com',  N'זמין לבנייה מיידית?'),
+(5,  6,  1, N'שירה דיין',    N'050-6789012', N'shira@example.com',  N'רוצה לשמוע עוד'),
+(6,  7,  1, N'עומרי גולדברג',N'050-7890123', N'omri@example.com',   N'אפשר תמונות נוספות'),
+(7,  8,  1, N'נועה אברהם',   N'050-8901234', N'noa@example.com',    N'מתאים למשפחה?'),
+(8,  9,  1, N'איתן שמואלי',  N'050-9012345', N'eitan@example.com',  N'מה מצב הנכס'),
+(9,  10, 1, N'תמר בן דוד',   N'050-0123456', N'tamar@example.com',  N'מעוניינת לקבוע פגישה'),
+(10, 1,  1, N'אורי כהן',     N'050-1234567', N'uri@example.com',    N'שאלה כללית על הנכס');
 GO
 
 -- =============================================
 -- 10. פניות למנהל (AdminInquiries)
 -- =============================================
 INSERT INTO AdminInquiries (UserID, Name, Email, Phone, Subject, Message) VALUES
-(1, 'אורי כהן',    'uri@example.com',   '050-1234567', 'שאלה על ניהול',     'אפשרויות ניהול נוספות'),
-(2, 'מיה לוי',     'maya@example.com',  '050-2345678', 'מחירים',            'בירור על מחירי נופש'),
-(3, 'דניאל פרץ',  'daniel@example.com','050-3456789', 'הזמנות',            'איך מבטלים הזמנה'),
-(4, 'אנה רוזנברג','anna@example.com',  '050-4567890', 'מדיניות',           'מדיניות ביטולים'),
-(5, 'יוסי ברק',   'yossi@example.com', '050-5678901', 'שירות לקוחות',      'זמני מענה'),
-(6, 'שירה דיין',  'shira@example.com', '050-6789012', 'תמונות',            'לא רואה את כל התמונות'),
-(7, 'עומרי גולדברג','omri@example.com','050-7890123', 'גישה למערכת',       'בעיית התחברות'),
-(8, 'נועה אברהם', 'noa@example.com',   '050-8901234', 'עדכונים',           'עדכון פרטים אישיים'),
-(9, 'איתן שמואלי','eitan@example.com', '050-9012345', 'פניות',             'סטטוס פנייה קודמת'),
-(10,'תמר בן דוד', 'tamar@example.com', '050-0123456', 'מבצעים',            'יש מבצעים קרובים?');
+(1,  N'אורי כהן',      N'uri@example.com',   N'050-1234567', N'שאלה על ניהול',     N'אפשרויות ניהול נוספות'),
+(2,  N'מיה לוי',       N'maya@example.com',  N'050-2345678', N'מחירים',            N'בירור על מחירי נופש'),
+(3,  N'דניאל פרץ',     N'daniel@example.com',N'050-3456789', N'הזמנות',            N'איך מבטלים הזמנה'),
+(4,  N'אנה רוזנברג',   N'anna@example.com',  N'050-4567890', N'מדיניות',           N'מדיניות ביטולים'),
+(5,  N'יוסי ברק',      N'yossi@example.com', N'050-5678901', N'שירות לקוחות',      N'זמני מענה'),
+(6,  N'שירה דיין',     N'shira@example.com', N'050-6789012', N'תמונות',            N'לא רואה את כל התמונות'),
+(7,  N'עומרי גולדברג', N'omri@example.com',  N'050-7890123', N'גישה למערכת',       N'בעיית התחברות'),
+(8,  N'נועה אברהם',    N'noa@example.com',   N'050-8901234', N'עדכונים',           N'עדכון פרטים אישיים'),
+(9,  N'איתן שמואלי',   N'eitan@example.com', N'050-9012345', N'פניות',             N'סטטוס פנייה קודמת'),
+(10, N'תמר בן דוד',    N'tamar@example.com', N'050-0123456', N'מבצעים',            N'יש מבצעים קרובים?');
 GO

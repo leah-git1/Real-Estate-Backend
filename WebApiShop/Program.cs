@@ -9,7 +9,7 @@ using WebApiShop.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("SchoolConnection");
 builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer(connectionString));
 
 
