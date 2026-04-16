@@ -89,12 +89,15 @@ namespace Services
                     throw new Exception("הסיסמה החדשה חלשה מדי. עליה להכיל לפחות 8 תווים ושילוב של אותיות ומספרים");
                 }
             }
-
-            List<User> allUsers = await _iUsersRepository.GetAllUsers();
-            foreach (var item in allUsers)
+            
+            if(userToUpdate.Email != null && userToUpdate.Email != "")
             {
-                if (item.Email == userToUpdate.Email && item.UserId != id)
-                    throw new Exception("כתובת האימייל כבר קיימת במערכת.");
+                List<User> allUsers = await _iUsersRepository.GetAllUsers();
+                foreach (var item in allUsers)
+                {
+                    if (item.Email == userToUpdate.Email && item.UserId != id)
+                        throw new Exception("כתובת האימייל כבר קיימת במערכת.");
+                }
             }
 
             User user = _mapper.Map<UserUpdateDTO, User>(userToUpdate);
